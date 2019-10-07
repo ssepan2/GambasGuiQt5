@@ -1,0 +1,60 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  Icon = Picture["icon:/32/gnu"]
+  { MenuFile Menu
+    Text = Shortcut(("File"), "F")
+    { MenuFileExit Menu
+      Text = Shortcut(("Exit"), "x")
+    }
+  }
+  { MenuHelp Menu
+    Text = Shortcut(("Help"), "H")
+    { MenuHelpAbout Menu
+      Text = Shortcut(("About"), "A")
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(1,55,62,5)
+    Border = Border.Sunken
+    { StatusLabel Label
+      MoveScaled(1,1,31,3)
+      Text = ("SomeStatus")
+    }
+    { PictureBox1 PictureBox
+      MoveScaled(58,1,4,4)
+      AutoResize = True
+      Picture = Picture["icon:/22/floppy"]
+    }
+    { ProgressBar1 ProgressBar
+      MoveScaled(33,1,24,3)
+    }
+  }
+  { ButtonClose Button
+    MoveScaled(45,50,16,4)
+    Text = ("Close")
+  }
+  { TextBox1 TextBox
+    MoveScaled(32,41,24,4)
+  }
+  { Label1 Label
+    MoveScaled(6,42,24,4)
+    Text = ("type something")
+  }
+  { ToolBar1 ToolBar
+    MoveScaled(1,0,62,4)
+    { ToolButtonFileNew ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("New")
+      AutoResize = True
+      Picture = Picture["icon:/22/new"]
+    }
+    { ToolButtonFileOpen ToolButton
+      MoveScaled(3,0,4,4)
+      ToolTip = ("New")
+      AutoResize = True
+      Picture = Picture["icon:/22/open"]
+    }
+  }
+}

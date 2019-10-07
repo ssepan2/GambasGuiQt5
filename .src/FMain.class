@@ -1,0 +1,50 @@
+' Gambas class file
+
+Private Sub Me_Close()
+  
+  Me.Close
+  
+End
+
+Public Sub Form_Open()
+
+    
+
+End
+
+Public Sub ToolButtonFileNew_Click()
+
+  StatusLabel.Text = ("ToolButtonFileNew_Click")
+
+End
+
+Public Sub ToolButtonFileOpen_Click()
+
+  StatusLabel.Text = ("ToolButtonFileOpen_Click")
+
+End
+
+Public Sub MenuFileExit_Click()
+
+  Me_Close
+
+End
+
+Public Sub MenuHelpAbout_Click()
+
+  StatusLabel.Text = ("MenuHelpAbout_Click")
+  Message("About...")
+
+End
+
+Public Sub ButtonClose_Click()
+
+  Me_Close
+
+End
+
+Public Sub TextBox1_KeyRelease()
+
+  Label1.Caption = TextBox1.Text
+
+End

@@ -1,0 +1,12 @@
+FMain
+Gambas Gui Qt5
+0
+0
+0.0.4
+
+gb.image
+gb.gui.qt
+gb.form
+gb.settings
+gb.form.mdi
+
