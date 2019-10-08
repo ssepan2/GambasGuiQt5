@@ -1,9 +1,10 @@
-FMain
+Main
 Gambas Gui Qt5
 0
 0
-0.0.4
+0.0.6
 
+gb.args
 gb.image
 gb.gui.qt
 gb.form

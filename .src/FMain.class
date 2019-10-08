@@ -1,27 +1,122 @@
 ' Gambas class file
 
+'
+' Private
+'
+Private controller As Controller
+
 Private Sub Me_Close()
   
   Me.Close
   
 End
 
+Private Sub FileNew()
+    Dim errorMessage As String
+    StatusLabel.Text = "Starting New..."
+    StatusPictureBox.Picture = ToolButtonFileNew.Picture
+    StatusProgressBar.Value = 0.5
+
+    If controller.FileNew(ByRef errorMessage)
+        StatusLabel.Text = "Finished New."
+        StatusProgressBar.Value = 1
+        Wait 1
+    Else
+        StatusLabel.Text = errorMessage '"Error on New!"
+    Endif
+    StatusProgressBar.Value = 0
+    StatusPictureBox.Picture = Null
+End
+
+Private Sub FileOpen()
+    Dim errorMessage As String
+    StatusLabel.Text = "Starting Open..."
+    StatusPictureBox.Picture = ToolButtonFileOpen.Picture
+    StatusProgressBar.Value = 0.5
+
+    If controller.FileOpen(ByRef errorMessage)
+        StatusLabel.Text = "Finished Open."
+        StatusProgressBar.Value = 1
+        Wait 1
+    Else
+        StatusLabel.Text = errorMessage '"Error on Open!"
+    Endif
+    StatusProgressBar.Value = 0
+    StatusPictureBox.Picture = Null
+End
+
+Private Sub FileSave()
+    Dim errorMessage As String
+    StatusLabel.Text = "Starting FileSave..."
+    StatusPictureBox.Picture = ToolButtonFileSave.Picture
+    StatusProgressBar.Value = 0.5
+
+    If controller.FileSave(ByRef errorMessage)
+        StatusLabel.Text = "Finished FileSave."
+        StatusProgressBar.Value = 1
+        Wait 1
+    Else
+        StatusLabel.Text = errorMessage '"Error on FileSave!"
+    Endif
+    StatusProgressBar.Value = 0
+    StatusPictureBox.Picture = Null
+End
+
+Private Sub FileSaveAs()
+    Dim errorMessage As String
+    StatusLabel.Text = "Starting FileSaveAs..."
+    StatusPictureBox.Picture = ToolButtonFileSaveAs.Picture
+    StatusProgressBar.Value = 0.5
+
+    If controller.FileSaveAs(ByRef errorMessage)
+        StatusLabel.Text = "Finished FileSaveAs."
+        StatusProgressBar.Value = 1
+        Wait 1
+    Else
+        StatusLabel.Text = errorMessage '"Error on FileSaveAs!"
+    Endif
+    StatusProgressBar.Value = 0
+    StatusPictureBox.Picture = Null
+End
+
+'
+' Form
+'
 Public Sub Form_Open()
+   Dim Result As String
+ 
+    StatusLabel.Text = "Starting Form_Open..."
+    Try controller = New Controller
+        Result = "Finished Form_Open."
+    Finally
+        StatusLabel.Text = Result
+    Catch
+        Result = "Error on Form_Open!"
+End
 
-    
+Public Sub Form_Close()
+
+    controller = Null
 
 End
 
-Public Sub ToolButtonFileNew_Click()
-
-  StatusLabel.Text = ("ToolButtonFileNew_Click")
-
+'
+' Menu
+'
+Public Sub MenuFileNew_Click()
+    FileNew
 End
 
-Public Sub ToolButtonFileOpen_Click()
+Public Sub MenuFileOpen_Click()
+    FileOpen
+End
 
-  StatusLabel.Text = ("ToolButtonFileOpen_Click")
+Public Sub MenuFileSave_Click()
+    FileSave
+End
 
+Public Sub MenuFileSaveAs_Click()
+    FileSaveAs
 End
 
 Public Sub MenuFileExit_Click()
@@ -37,6 +132,28 @@ Public Sub MenuHelpAbout_Click()
 
 End
 
+'
+' Toolbar
+'
+Public Sub ToolButtonFileNew_Click()
+    FileNew
+End
+
+Public Sub ToolButtonFileOpen_Click()
+    FileOpen
+End
+
+Public Sub ToolButtonFileSave_Click()
+    FileSave
+End
+
+Public Sub ToolButtonFileSaveAs_Click()
+    FileSaveAs
+End
+
+'
+' Controls
+'
 Public Sub ButtonClose_Click()
 
   Me_Close

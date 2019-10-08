@@ -1,0 +1,24 @@
+' Gambas module file
+
+Public Function Main() As Integer
+    Dim mainForm As FMain
+    Dim result As Integer
+    Dim bF As Boolean
+    
+    Args.Begin(Application.Name & " <option>")
+    bF = Args.Has("f", "file", "some file param")
+    Args.End
+    
+    If bF Then
+        Print "f param used"
+    Endif
+
+  Print "Starting FMain..."
+  
+  mainForm = New FMain(Null)
+  result = mainForm.ShowModal()
+  
+  Print "FMain: " & result
+  
+    Return result
+End
