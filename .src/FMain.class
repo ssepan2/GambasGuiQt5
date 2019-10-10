@@ -4,8 +4,9 @@
 ' Private
 '
 Private controller As Controller
+Private model As SomeModel
 
-Private Sub Me_Close()
+Private Sub Close()
   
   Me.Close
   
@@ -83,22 +84,44 @@ End
 ' Form
 '
 Public Sub Form_Open()
-   Dim Result As String
- 
-    StatusLabel.Text = "Starting Form_Open..."
-    Try controller = New Controller
-        Result = "Finished Form_Open."
-    Finally
-        StatusLabel.Text = Result
-    Catch
-        Result = "Error on Form_Open!"
+    StartController
+    'TODO:StartModel or FileNew
 End
 
 Public Sub Form_Close()
 
+    model = Null
     controller = Null
 
 End
+
+Private Sub StartController()
+   Dim Result As String
+ 
+    StatusLabel.Text = "Starting controller..."
+    StatusPictureBox.Picture = ToolButtonFileNew.Picture
+    StatusProgressBar.Value = 0.33
+    Try controller = New Controller
+        Result = "Finished controller."
+        StatusProgressBar.Value = 1
+    Finally
+        StatusLabel.Text = Result
+        Wait 1
+        StatusProgressBar.Value = 0
+        StatusPictureBox.Picture = Null
+    Catch
+        Result = "Error on controller!"
+End
+
+
+Public Sub UpdateForm()
+    
+    'Me.SomeStringTextBox.text = x
+    'Me.SomeIntegerValueBox.value = x
+    'Me.SomeBooleanCheckBox.Value = x
+    
+End
+
 
 '
 ' Menu
@@ -121,7 +144,7 @@ End
 
 Public Sub MenuFileExit_Click()
 
-  Me_Close
+  Close()
 
 End
 
@@ -156,12 +179,25 @@ End
 '
 Public Sub ButtonClose_Click()
 
-  Me_Close
+  Close()
 
 End
 
-Public Sub TextBox1_KeyRelease()
 
-  Label1.Caption = TextBox1.Text
+Public Sub SomeStringTextBox_Change()
+
+    'x=SomeStringTextBox.text
+
+End
+
+Public Sub SomeIntegerValueBox_Change()
+
+    ' x=SomeIntegerValueBox.Value
+
+End
+
+Public Sub SomeBooleanCheckBox_Click()
+
+    ' x=SomeBooleanCheckBox.Value
 
 End

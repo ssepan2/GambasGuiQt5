@@ -47,12 +47,13 @@
     MoveScaled(45,50,16,4)
     Text = ("Close")
   }
-  { TextBox1 TextBox
-    MoveScaled(32,41,24,4)
+  { SomeStringTextBox TextBox
+    MoveScaled(15,6,24,4)
   }
-  { Label1 Label
-    MoveScaled(6,42,24,4)
-    Text = ("type something -->")
+  { SomeStringLabel Label
+    MoveScaled(2,6,12,4)
+    Text = ("Some String:")
+    Alignment = Align.Right
   }
   { ToolBar1 ToolBar
     MoveScaled(1,0,62,4)
@@ -81,5 +82,22 @@
       AutoResize = True
       Picture = Picture["icon:/22/save-as"]
     }
+  }
+  { SomeIntegerLabel Label
+    MoveScaled(2,11,12,4)
+    Text = ("Some Integer:")
+    Alignment = Align.Right
+  }
+  { SomeIntegerValueBox ValueBox
+    MoveScaled(15,11,24,4)
+    Alignment = Align.Right
+  }
+  { SomeBooleanCheckBox CheckBox
+    MoveScaled(15,16,3,4)
+  }
+  { SomeBooleanLabel Label
+    MoveScaled(2,16,12,4)
+    Text = ("Some Boolean:")
+    Alignment = Align.Right
   }
 }

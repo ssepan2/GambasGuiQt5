@@ -1,0 +1,56 @@
+' Gambas class file
+
+Class SomeModel Inherits ModelBase
+
+'
+'Properties
+'
+Property SomeString As String
+Private $_SomeString As String
+Private Function SomeString_Read() As String
+
+    Return $_SomeString
+
+End
+
+Private Sub SomeString_Write(Value As String)
+
+    $_SomeString = Value
+    Me.Saved = False
+
+End
+
+Property SomeBoolean As Boolean
+Private $_SomeBoolean As Boolean
+Private Function SomeBoolean_Read() As Boolean
+
+    Return $_SomeBoolean
+
+End
+
+Private Sub SomeBoolean_Write(Value As Boolean)
+
+    $_SomeBoolean = Value
+    Me.Saved = False
+
+End
+
+Property SomeInteger As Integer
+Private $_SomeInteger As Integer
+Private Function SomeInteger_Read() As Integer
+
+    Return $_SomeInteger
+
+End
+
+Private Sub SomeInteger_Write(Value As Integer)
+
+    $_SomeInteger = Value
+    Me.Saved = False
+
+End
+
+'
+'Methods
+'
+
