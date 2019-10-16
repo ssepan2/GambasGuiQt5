@@ -84,8 +84,26 @@ End
 ' Form
 '
 Public Sub Form_Open()
+    
+    'Try
+        Me.Top = Settings["FMain/Top", Me.Top]
+        Me.Left = Settings["FMain/Left", Me.Left]
+        Me.Height = Settings["FMain/Height", Me.Height]
+        Me.Width = Settings["FMain/Width", Me.Width]
+    'Catch
+        
+    'End Try
+
+    StatusProgressBar.Value = 0.33
     StartController
-    'TODO:StartModel or FileNew
+
+    StatusProgressBar.Value = 0.66
+    FileNew
+    
+    
+    StatusProgressBar.Value = 1
+    Wait 1
+    StatusProgressBar.Value = 0
 End
 
 Public Sub Form_Close()
@@ -93,6 +111,10 @@ Public Sub Form_Close()
     model = Null
     controller = Null
 
+    Settings["FMain/Top"] = Me.Top
+    Settings["FMain/Left"] = Me.Left
+    Settings["FMain/Height"] = Me.Height
+    Settings["FMain/Width"] = Me.Width
 End
 
 Private Sub StartController()
@@ -100,14 +122,10 @@ Private Sub StartController()
  
     StatusLabel.Text = "Starting controller..."
     StatusPictureBox.Picture = ToolButtonFileNew.Picture
-    StatusProgressBar.Value = 0.33
     Try controller = New Controller
         Result = "Finished controller."
-        StatusProgressBar.Value = 1
     Finally
         StatusLabel.Text = Result
-        Wait 1
-        StatusProgressBar.Value = 0
         StatusPictureBox.Picture = Null
     Catch
         Result = "Error on controller!"
@@ -201,3 +219,5 @@ Public Sub SomeBooleanCheckBox_Click()
     ' x=SomeBooleanCheckBox.Value
 
 End
+
+
