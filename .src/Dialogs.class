@@ -1,0 +1,15 @@
+' Gambas class file
+
+' Export
+Create Static
+
+Public Function FormatAbout(oApplication As Application) As String
+    'Try
+        Dim sResult As String = Null
+        sResult &= oApplication.Name & gb.CrLf & oApplication.Title & gb.CrLf & oApplication.Version & gb.CrLf & oApplication.Id & gb.CrLf & oApplication.Path
+	Finally
+        Return sResult
+	Catch 'ex As Exception
+		Debug Log.FormatError() 'Error.Text 'TODO:get this dump into a log file
+    
+End

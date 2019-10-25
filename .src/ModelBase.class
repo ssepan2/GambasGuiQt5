@@ -5,28 +5,36 @@ Class ModelBase
 '
 'Properties
 '
+Private $sKey As String
 Property Key As String
-Private $_Key As String
 
 Private Function Key_Read() As String
 
-    Return $_Key
+    Return $sKey
 
 End
 
 Private Sub Key_Write(Value As String)
 
-    $_Key = Value
-    'UpdateEverything()
+    If $sKey <> Value Then
+        $sKey = Value
+        Me.Dirty = True
+    Endif
 
 End
 
-Property Read Saved As Boolean
-Private $_Saved As Boolean = False
+Private $bDirty As Boolean = False
+Property Dirty As Boolean
 
-Private Function Saved_Read() As Boolean
+Private Function Dirty_Read() As Boolean
 
-    Return $_Saved  
+    Return $bDirty
+
+End
+
+Private Sub Dirty_Write(Value As Boolean)
+
+    $bDirty = Value
 
 End
 

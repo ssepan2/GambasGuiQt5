@@ -1,175 +1,203 @@
 ' Gambas class file
 
+' #Region "Declarations"
+Private _model As SomeModel = Null
+Private $bStopControlEvents As Boolean = False
+' #End Region
+
+' #Region "Constructors"
+' Public Sub FMain_new()
+' End
+' #End Region
+
+' #Region "INotifyPropertyChanged"
+' Event PropertyChanged '(propertyName As String)
+' Private $obsPropertyChanged As Observer
+
+' Public Sub NotifyPropertyChanged(propertyName As String)
+'     ' Dim bResult As Boolean = False
 '
-' Private
+'     Debug "PropertyChanged fired: " & propertyName
+'     FMain_PropertyChanged(propertyName) 'can't get events to fire; brute-force it...
+'     'bResult = Raise PropertyChanged(propertyName) 'As "FMain_PropertyChanged"
+'     ' If bResult Then
+'     '       Debug "PropertyChanged cancelled: " & propertyName
+'     '   Endif
 '
-Private controller As Controller
-Private model As SomeModel
+' End 'Sub
+' #End Region
 
-Private Sub Close()
-  
-  Me.Close
-  
-End
+' #Region "PropertyChanged Handlers"
+' ''' <summary>
+' ''' Handler for PropertyChanged on the Settings field 'Dirty'.
+' ''' </summary>
+' Public Sub FMain_PropertyChanged(propertyName As String)
+'
+'     Select propertyName
+'         Case "SomeString"
+'         Case "SomeInteger"
+'         Case "SomeBoolean"
+'             ' Case "XXX"
+'         Case Else
+'             Raise Error("unhandled event:" & propertyName)
+'     End Select
+'     Debug "PropertyChanged handled: " & propertyName
+'     ' Stop Event
+'
+' End
+' #End Region
 
-Private Sub FileNew()
-    Dim errorMessage As String
-    StatusLabel.Text = "Starting New..."
-    StatusPictureBox.Picture = ToolButtonFileNew.Picture
-    StatusProgressBar.Value = 0.5
+' #Region "Properties"
 
-    If controller.FileNew(ByRef errorMessage)
-        StatusLabel.Text = "Finished New."
-        StatusProgressBar.Value = 1
-        Wait 1
-    Else
-        StatusLabel.Text = errorMessage '"Error on New!"
-    Endif
-    StatusProgressBar.Value = 0
-    StatusPictureBox.Picture = Null
-End
+' #End Region
 
-Private Sub FileOpen()
-    Dim errorMessage As String
-    StatusLabel.Text = "Starting Open..."
-    StatusPictureBox.Picture = ToolButtonFileOpen.Picture
-    StatusProgressBar.Value = 0.5
-
-    If controller.FileOpen(ByRef errorMessage)
-        StatusLabel.Text = "Finished Open."
-        StatusProgressBar.Value = 1
-        Wait 1
-    Else
-        StatusLabel.Text = errorMessage '"Error on Open!"
-    Endif
-    StatusProgressBar.Value = 0
-    StatusPictureBox.Picture = Null
-End
-
-Private Sub FileSave()
-    Dim errorMessage As String
-    StatusLabel.Text = "Starting FileSave..."
-    StatusPictureBox.Picture = ToolButtonFileSave.Picture
-    StatusProgressBar.Value = 0.5
-
-    If controller.FileSave(ByRef errorMessage)
-        StatusLabel.Text = "Finished FileSave."
-        StatusProgressBar.Value = 1
-        Wait 1
-    Else
-        StatusLabel.Text = errorMessage '"Error on FileSave!"
-    Endif
-    StatusProgressBar.Value = 0
-    StatusPictureBox.Picture = Null
-End
-
-Private Sub FileSaveAs()
-    Dim errorMessage As String
-    StatusLabel.Text = "Starting FileSaveAs..."
-    StatusPictureBox.Picture = ToolButtonFileSaveAs.Picture
-    StatusProgressBar.Value = 0.5
-
-    If controller.FileSaveAs(ByRef errorMessage)
-        StatusLabel.Text = "Finished FileSaveAs."
-        StatusProgressBar.Value = 1
-        Wait 1
-    Else
-        StatusLabel.Text = errorMessage '"Error on FileSaveAs!"
-    Endif
-    StatusProgressBar.Value = 0
-    StatusPictureBox.Picture = Null
-End
+' #Region "Methods"
 
 '
 ' Form
 '
+
 Public Sub Form_Open()
-    
-    'Try
-        Me.Top = Settings["FMain/Top", Me.Top]
-        Me.Left = Settings["FMain/Left", Me.Left]
-        Me.Height = Settings["FMain/Height", Me.Height]
-        Me.Width = Settings["FMain/Width", Me.Width]
-    'Catch
-        
-    'End Try
 
-    StatusProgressBar.Value = 0.33
-    StartController
+    '$obsPropertyChanged = New Observer(Me) As "FMain_PropertyChanged"
 
-    StatusProgressBar.Value = 0.66
+    ' Object.Attach(Me, Null, "FMain_PropertyChanged")
+
+    Me.Top = Settings["FMain/Top", Me.Top]
+    Me.Left = Settings["FMain/Left", Me.Left]
+    Me.Height = Settings["FMain/Height", Me.Height]
+    Me.Width = Settings["FMain/Width", Me.Width]
+
     FileNew
-    
-    
-    StatusProgressBar.Value = 1
+
     Wait 1
-    StatusProgressBar.Value = 0
+    'Finally
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
 End
 
 Public Sub Form_Close()
-
-    model = Null
-    controller = Null
 
     Settings["FMain/Top"] = Me.Top
     Settings["FMain/Left"] = Me.Left
     Settings["FMain/Height"] = Me.Height
     Settings["FMain/Width"] = Me.Width
-End
 
-Private Sub StartController()
-   Dim Result As String
- 
-    StatusLabel.Text = "Starting controller..."
-    StatusPictureBox.Picture = ToolButtonFileNew.Picture
-    Try controller = New Controller
-        Result = "Finished controller."
-    Finally
-        StatusLabel.Text = Result
-        StatusPictureBox.Picture = Null
-    Catch
-        Result = "Error on controller!"
 End
-
 
 Public Sub UpdateForm()
-    
-    'Me.SomeStringTextBox.text = x
-    'Me.SomeIntegerValueBox.value = x
-    'Me.SomeBooleanCheckBox.Value = x
-    
-End
+    'prevent control events from firing while being loaded from model
 
+    $bStopControlEvents = True
+    SomeStringTextBox.text = _model.SomeString
+    SomeIntegerValueBox.value = _model.SomeInteger
+    SomeBooleanCheckBox.Value = _model.SomeBoolean
+Finally
+    $bStopControlEvents = False
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+End
 
 '
 ' Menu
 '
 Public Sub MenuFileNew_Click()
+
     FileNew
+
 End
 
 Public Sub MenuFileOpen_Click()
+
     FileOpen
+
 End
 
 Public Sub MenuFileSave_Click()
+
     FileSave
+
 End
 
 Public Sub MenuFileSaveAs_Click()
-    FileSaveAs
+
+    FileSave(True)
+
+End
+
+Public Sub MenuFilePrint_Click()
+
+    FilePrint
+
 End
 
 Public Sub MenuFileExit_Click()
 
-  Close()
+    FileExit   'CloseForm
+
+End
+
+Public Sub MenuEditUndo_Click()
+
+    EditUndo
+
+End
+
+Public Sub MenuEditRedo_Click()
+
+    EditRedo
+
+End
+
+Public Sub MenuEditCut_Click()
+
+    EditCut
+
+End
+
+Public Sub MenuEditCopy_Click()
+
+    EditCopy
+
+End
+
+Public Sub MenuEditPaste_Click()
+
+    EditPaste
+
+End
+
+Public Sub MenuEditDelete_Click()
+
+    EditDelete
+
+End
+
+Public Sub MenuEditFind_Click()
+
+    EditFind
+
+End
+
+Public Sub MenuEditRefresh_Click()
+
+    EditRefresh
+
+End
+
+Public Sub MenuEditProperties_Click()
+
+    EditPreferences
 
 End
 
 Public Sub MenuHelpAbout_Click()
 
-  StatusLabel.Text = ("MenuHelpAbout_Click")
-  Message("About...")
+    HelpAbout
 
 End
 
@@ -177,19 +205,87 @@ End
 ' Toolbar
 '
 Public Sub ToolButtonFileNew_Click()
+
     FileNew
+
 End
 
 Public Sub ToolButtonFileOpen_Click()
+
     FileOpen
+
 End
 
 Public Sub ToolButtonFileSave_Click()
+
     FileSave
+
 End
 
 Public Sub ToolButtonFileSaveAs_Click()
-    FileSaveAs
+
+    FileSave(True)
+
+End
+
+Public Sub ToolButtonFilePrint_Click()
+
+    FilePrint
+
+End
+
+Public Sub ToolButtonEditUndo_Click()
+
+    EditUndo
+
+End
+
+Public Sub ToolButtonEditRedo_Click()
+
+    EditRedo
+
+End
+
+Public Sub ToolButtonEditCut_Click()
+
+    EditCut
+
+End
+
+Public Sub ToolButtonEditCopy_Click()
+
+    EditCopy
+
+End
+
+Public Sub ToolButtonEditPaste_Click()
+
+    EditPaste
+
+End
+
+Public Sub ToolButtonEditDelete_Click()
+
+    EditDelete
+
+End
+
+Public Sub ToolButtonEditFind_Click()
+
+    EditFind
+
+End
+
+Public Sub ToolButtonEditRefresh_Click()
+
+    EditRefresh
+
+End
+
+Public Sub ToolButtonEditProperties_Click()
+
+    EditPreferences
+
 End
 
 '
@@ -197,27 +293,670 @@ End
 '
 Public Sub ButtonClose_Click()
 
-  Close()
+    FileExit   'CloseForm
 
 End
 
-
 Public Sub SomeStringTextBox_Change()
 
-    'x=SomeStringTextBox.text
+    If $bStopControlEvents Then
+        Stop Event
+    Endif
+
+    _model.SomeString = SomeStringTextBox.text
+    CheckDirty
 
 End
 
 Public Sub SomeIntegerValueBox_Change()
 
-    ' x=SomeIntegerValueBox.Value
+    If $bStopControlEvents Then
+        Stop Event
+    Endif
+
+    _model.SomeInteger = SomeIntegerValueBox.Value
+    CheckDirty
 
 End
 
 Public Sub SomeBooleanCheckBox_Click()
 
-    ' x=SomeBooleanCheckBox.Value
+    If $bStopControlEvents Then
+        Stop Event
+    Endif
+
+    _model.SomeBoolean = SomeBooleanCheckBox.Value
+    CheckDirty
 
 End
 
+Public Sub CheckDirty()
 
+    StatusDirtyIcon.Visible = _model.Dirty
+
+End
+
+'
+' ViewModel
+'
+
+'TODO:put here if cannot init in main moduile
+
+''' <summary>
+''' Call for any action that loads or creates settings (New, Open).
+''' </summary>
+Public Sub RefreshModel()
+
+    'Wait
+    UpdateForm
+    CheckDirty
+
+Catch 'ex As Exception
+    lblErrorMessage.Text = Log.FormatError
+    Debug lblErrorMessage.Text
+
+End 'Sub
+
+Public Sub FileNew()
+
+    Dim bCancel As Boolean = False
+    Dim sStatusMessage As String
+
+    If Not IsNull(_model) Then
+        If _model.Dirty Then
+            'prompt before saving
+            Select Case Message.Question("Save changes?:" & _model.Key, "&Yes", "&No", "&Cancel")
+                Case 1
+                    'Yes, SAVE
+                    FileSave
+                Case 2
+                    'No, skip Save and continue to do New
+                Case 3
+                    'Cancel, skip Save and New
+                    bCancel = True
+                Case Else
+                    Error.Raise("InvalidEnumArgumentException")
+            End Select
+        Endif
+    Endif
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("New...", Null, Picture["icon:/22/new"], True, 33)
+
+    If bCancel Then
+        sStatusMessage = "New cancelled."
+    Else
+        'NEW
+        _model = New SomeModel
+
+        RefreshModel
+        StopProgressBar("New completed")
+        sStatusMessage = "New completed"
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError 'TODO:get this dump into a log file
+
+    StopProgressBar("", Error.Text)
+
+End 'Sub
+
+Public Sub FileOpen()
+
+    Dim bCancel As Boolean = False
+    Dim response As String = Null
+    Dim sStatusMessage As String
+
+    If Not IsNull(_model) Then
+        If _model.Dirty Then
+            'prompt before saving
+            Select Case Message.Question("Save changes?:" & _model.Key, "&Yes", "&No", "&Cancel")
+                Case 1
+                    'Yes, SAVE
+                    FileSave(True)
+                Case 2
+                    'No, skip Save and continue to do Open
+                Case 3
+                    'Cancel, skip Save and Open
+                    bCancel = True
+                Case Else
+                    Error.Raise("InvalidEnumArgumentException")
+            End Select
+        Endif
+    Endif
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Opening...", Null, Picture["icon:/22/open"], True, 33)
+
+    If bCancel Then
+        sStatusMessage = "Open cancelled during Save."
+    Else
+        response = InputBox("Enter Name for model:", "Open...", _model.Key)
+        If Not IsNull(response) Then
+            _model.Key = response
+        Else
+            bCancel = True
+        Endif
+
+        If bCancel Then
+            sStatusMessage = "Open cancelled during model name input."
+        Else
+            'OPEN
+            _model = _model.OpenFromSettings()
+            RefreshModel
+
+            sStatusMessage = "Opened."
+        Endif
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, Error.Text) 'Note:Finally fires before Catch
+
+End 'Sub
+
+'''// <summary>
+'''// Write model to settings
+'''// </summary>
+'''// <param name="bSaveAs">Boolean. Force SaveAs prompt for name</param>
+Public Sub FileSave(Optional bSaveAs As Boolean = False)
+
+    Dim response As String = Null
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    If bSaveAs Then
+        StartProgressBarWithPicture("Saving As...", Null, Picture["icon:/22/saveas"], True, 33)
+    Else
+        StartProgressBarWithPicture("Saving...", Null, Picture["icon:/22/save"], True, 33)
+    Endif
+
+    If IsNull(_model.Key) Or bSaveAs Then
+        response = InputBox("Enter Name for model:", "Save As...", _model.Key)
+        If Not IsNull(response) Then
+            _model.Key = response
+        Else
+            Error.Raise("Null model Name entered: " & response)
+        Endif
+    Endif
+
+    'SAVE
+    _model.SaveToSettings 'TODO:if saveas, read and if already present, prompt to replace
+
+    RefreshModel
+Finally
+    StopProgressBar("Saved.")
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, Error.Text)
+
+End 'Sub
+
+Public Sub FilePrint()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Printing...", Null, Picture["icon:/22/print"], True, 33)
+
+    If Something() Then 'TODO:print
+        sStatusMessage = "Printed."
+    Else
+        sStatusMessage = "Print cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Print failed: '" & Error.Text & "'")
+
+End 'Sub
+
+Public Sub FileExit()
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    If Not IsNull(_model) Then
+        If _model.Dirty Then
+            'prompt before saving
+            Select Case Message.Question("Save changes?", "&Yes", "&No")
+                Case 1
+                    'Yes, SAVE
+                    FileSave
+                Case 2
+                    'No
+                Case Else
+                    Error.Raise("InvalidEnumArgumentException")
+            End Select
+        Endif
+    Endif
+
+    Me.Close
+
+    'lblStatusMessage.Text = ""
+Catch
+    'lblErrorMessage.Text = "blah" 'Log.FormatError
+
+    Debug lblErrorMessage.Text
+
+End 'Sub
+
+'temp
+Private Function Something() As Boolean
+
+    Wait 1
+    Return True
+
+End
+
+Public Sub EditUndo()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Undo...", Null, Picture["icon:/22/undo"], True, 33)
+
+    If Something() Then 'TODO:undo
+        sStatusMessage = "Undo done."
+    Else
+        sStatusMessage = "Undo cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Undo failed: '" & Error.Text & "'")
+
+End
+
+Public Sub EditRedo()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Redo...", Null, Picture["icon:/22/redo"], True, 33)
+
+    If Something() Then 'TODO: redo
+        sStatusMessage = "Redo done."
+    Else
+        sStatusMessage = "Redo cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Redo failed: '" & Error.Text & "'")
+
+End
+
+Public Sub EditCut()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Cut...", Null, Picture["icon:/22/cut"], True, 33)
+
+    If Something() Then 'TODO:cut
+        sStatusMessage = "Cut done."
+    Else
+        sStatusMessage = "Cut cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Cut failed: '" & Error.Text & "'")
+
+End
+
+Public Sub EditCopy()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Copying...", Null, Picture["icon:/22/copy"], True, 33)
+
+    If Something() Then 'TODO:copy
+        sStatusMessage = "Copy done."
+    Else
+        sStatusMessage = "Copy cancelled."
+    Endif
+Finally
+    StopProgressBar("Copied.")
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Copy failed: " & Error.Text & "")
+
+End 'Sub
+
+Public Sub EditPaste()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Paste...", Null, Picture["icon:/22/paste"], True, 33)
+
+    If Something() Then 'TODO:paste
+        sStatusMessage = "Paste done."
+    Else
+        sStatusMessage = "Paste cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Paste failed: '" & Error.Text & "'")
+
+End
+
+Public Sub EditDelete()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Delete...", Null, Picture["icon:/22/delete"], True, 33)
+
+    If Something() Then 'TODO:delete
+        sStatusMessage = "Delete done."
+    Else
+        sStatusMessage = "Delete cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Delete failed: '" & Error.Text & "'")
+
+End
+
+Public Sub EditFind()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Find...", Null, Picture["icon:/22/find"], True, 33)
+
+    If Something() Then 'TODO:find
+        sStatusMessage = "Find done."
+    Else
+        sStatusMessage = "Find cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Find failed: '" & Error.Text & "'")
+
+End
+
+Public Sub EditRefresh()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Refresh...", Null, Picture["icon:/22/refresh"], True, 33)
+
+    If Something() Then 'TODO:refresh
+        sStatusMessage = "Refresh done."
+    Else
+        sStatusMessage = "Refresh cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Refresh failed: '" & Error.Text & "'")
+
+End
+
+Public Sub EditPreferences()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Preferences...", Null, Picture["icon:/22/properties"], True, 33)
+
+    If Something() Then 'TODO:Preferences
+        sStatusMessage = "Preferences done."
+    Else
+        sStatusMessage = "Preferences cancelled."
+    Endif
+Finally
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+
+    StopProgressBar(Null, "Preferences failed: '" & Error.Text & "'")
+
+End 'Sub
+
+Public Sub HelpAbout()
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("About...", Null, Null, True, 33)
+
+    Message("About " & Dialogs.FormatAbout(Application))
+Finally
+    StopProgressBar("About completed.")
+Catch 'ex As Exception
+    Debug Log.FormatError 'Log.Write( Error , System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+
+    StopProgressBar(Null, Error.Text)
+
+End 'Sub
+
+''' <summary>
+''' Use when Marquee-style progress bar is not sufficient, and percentages must be indicated.
+''' WPF.
+''' </summary>
+''' <param name="statusMessage"></param>
+''' <param name="errorMessage"></param>
+''' <param name="objImage"></param>
+''' <param name="isMarqueeProgressBarStyle"></param>
+''' <param name="progressBarValue"></param>
+Public Sub StartProgressBarWithImage(statusMessage__1 As String, errorMessage__2 As String, objImage As Image, isMarqueeProgressBarStyle As Boolean, progressBarValue__3 As Integer)
+
+    StatusProgressBar.Pulse = isMarqueeProgressBarStyle
+    'set to blocks if actual percentage was used.
+    StatusProgressBar.Value = progressBarValue__3
+    'set to value if percentage used.
+    'if Style is not Marquee, then we are marking either a count or percentage
+    If progressBarValue__3 > 1 Then 'StatusProgressBar.Maximum
+        'StatusProgressBar.Step = 1
+        StatusProgressBar.Value = 1
+    Endif
+
+    lblStatusMessage.Text = statusMessage__1
+    lblErrorMessage.Text = errorMessage__2
+    lblErrorMessage.ToolTip = errorMessage__2
+
+    StatusProgressBar.Visible = True
+
+    StatusActionIcon.Image = objImage
+    StatusActionIcon.Tooltip = statusMessage__1
+    StatusActionIcon.Visible = True
+    ' true;
+    'give the app time to draw the eye-candy, even if its only for an instant
+    Wait
+Catch 'ex As Exception
+    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Error.Propagate 'Throw
+
+End 'Sub
+
+''' <summary>
+''' Use when Marquee-style progress bar is not sufficient, and percentages must be indicated.
+''' WinForms.
+''' </summary>
+''' <param name="statusMessage"></param>
+''' <param name="errorMessage"></param>
+''' <param name="objImage"></param>
+''' <param name="isMarqueeProgressBarStyle"></param>
+''' <param name="progressBarValue"></param>
+Public Sub StartProgressBarWithPicture(statusMessage__1 As String, errorMessage__2 As String, objImage As Picture, isMarqueeProgressBarStyle As Boolean, progressBarValue__3 As Integer)
+
+    StatusProgressBar.Pulse = isMarqueeProgressBarStyle
+    'set to blocks if actual percentage was used.
+    StatusProgressBar.Value = progressBarValue__3
+    'set to value if percentage used.
+    'if Style is not Marquee, then we are marking either a count or percentage
+    If progressBarValue__3 > 1 Then 'StatusProgressBar.Maximum
+        'StatusProgressBar.Step = 1
+        StatusProgressBar.Value = 1
+    Endif
+
+    lblStatusMessage.Text = statusMessage__1
+    lblErrorMessage.Text = errorMessage__2
+    lblErrorMessage.ToolTip = errorMessage__2
+
+    StatusProgressBar.Visible = True
+
+    StatusActionIcon.Picture = objImage
+    StatusActionIcon.Tooltip = statusMessage__1
+    StatusActionIcon.Visible = True
+
+    'give the app time to draw the eye-candy, even if its only for an instant
+    Wait
+Catch 'ex As Exception
+    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Error.Propagate 'Throw
+
+End 'Sub
+
+''' <summary>
+''' Update percentage changes.
+''' </summary>
+''' <param name="statusMessage"></param>
+''' <param name="progressBarValue"></param>
+Public Sub UpdateProgressBar(statusMessage__1 As String, progressBarValue__2 As Integer)
+    'Try
+
+    If Not IsNull(statusMessage__1) Then
+        lblStatusMessage.Text = statusMessage__1
+    Endif
+
+    'if Style is not Marquee, then we are marking either a count or percentage
+    'if we are simply counting, the progress bar will periodically need to adjust the Maximum.
+    If progressBarValue__2 > 1 Then 'StatusProgressBar.Maximum
+        'StatusProgressBar.Maximum = StatusProgressBar.Maximum * 2
+        StatusProgressBar.Value = StatusProgressBar.Value / 2
+    Endif
+
+    StatusProgressBar.Value = progressBarValue__2
+
+    'give the app time to draw the eye-candy, even if its only for an instant
+    Wait
+Catch 'ex As Exception
+    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Error.Propagate 'Throw
+
+End 'Sub
+
+''' <summary>
+''' Update message(s) only, without changing progress bar.
+''' Null parameter will leave a message unchanged;
+''' "" will clear it.
+''' Optional doEvents flag will determine if
+''' messages are processed before continuing.
+''' </summary>
+''' <param name="statusMessage"></param>
+''' <param name="errorMessage"></param>
+Public Sub UpdateStatusBarMessages(statusMessage__1 As String, errorMessage__2 As String)
+
+    If Not IsNull(statusMessage__1) Then
+        lblStatusMessage.Text = statusMessage__1
+    Endif
+    If Not IsNull(errorMessage__2) Then
+        lblErrorMessage.Text = errorMessage__2
+        lblErrorMessage.ToolTip = errorMessage__2
+    Endif
+
+    'give the app time to draw the eye-candy, even if its only for an instant
+    Wait 'Application.DoEvents();
+Catch 'ex As Exception
+    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Error.Propagate 'Throw
+
+End 'Sub
+
+''' <summary>
+''' Stop progress bar and display messages.
+''' DoEvents will ensure messages are processed before continuing.
+''' </summary>
+''' <param name="statusMessage"></param>
+''' <param name="errorMessage">Null parameter will leave a message unchanged; "" will clear it.</param>
+Public Sub StopProgressBar(statusMessage__1 As String, Optional errorMessage__2 As String = Null)
+
+    lblStatusMessage.Text = statusMessage__1
+    'do not clear error at end of operation, clear it at start of operation
+    If errorMessage__2 <> Null Then
+        'this.StatusBarErrorMessage.ToolTipText = errorMessage;
+        lblErrorMessage.Text = errorMessage__2
+    Endif
+
+    StatusProgressBar.Pulse = False
+    'reset back to marquee (default) in case actual percentage was used
+    'StatusProgressBar.Maximum = 100
+    'ditto
+    ' StatusProgressBar.Step = 10
+    'ditto
+    StatusProgressBar.Value = 0
+    'ditto
+    StatusProgressBar.Visible = False
+    'false;
+    StatusActionIcon.Visible = False
+    ' false;
+
+    StatusActionIcon.Image = Null
+    StatusActionIcon.Tooltip = Null
+
+    'give the app time to draw the eye-candy, even if its only for an instant
+    Wait 'Application.DoEvents();
+Catch 'ex As Exception
+    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Error.Propagate 'Throw
+
+End 'Sub
+
+' #End Region

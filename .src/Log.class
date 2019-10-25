@@ -1,0 +1,16 @@
+' Gambas class file
+
+'Export
+Create Static
+
+Public Function FormatError() As String
+
+    Dim sResult As String = Null
+
+    sResult &= "Error: " & Error.Text & gb.CrLf & "Line: " & Error.Where & gb.CrLf & "Trace: " & gb.CrLf
+    For Each sLine As String In Error.Backtrace
+        sResult &= sLine & gb.CrLf
+    Next
+    Return sResult
+
+End

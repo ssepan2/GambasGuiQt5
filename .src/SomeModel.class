@@ -6,51 +6,108 @@ Class SomeModel Inherits ModelBase
 'Properties
 '
 Property SomeString As String
-Private $_SomeString As String
+Private $sSomeString As String
+
 Private Function SomeString_Read() As String
 
-    Return $_SomeString
+    Return $sSomeString
 
 End
 
 Private Sub SomeString_Write(Value As String)
 
-    $_SomeString = Value
-    Me.Saved = False
+    If $sSomeString <> Value Then
+        $sSomeString = Value
+        Me.Dirty = True
+    Endif
 
 End
 
 Property SomeBoolean As Boolean
-Private $_SomeBoolean As Boolean
+Private $bSomeBoolean As Boolean
+
 Private Function SomeBoolean_Read() As Boolean
 
-    Return $_SomeBoolean
+    Return $bSomeBoolean
 
 End
 
 Private Sub SomeBoolean_Write(Value As Boolean)
 
-    $_SomeBoolean = Value
-    Me.Saved = False
+    If $bSomeBoolean <> Value Then
+        $bSomeBoolean = Value
+        Me.Dirty = True
+    Endif
 
 End
 
 Property SomeInteger As Integer
-Private $_SomeInteger As Integer
+Private $iSomeInteger As Integer
+
 Private Function SomeInteger_Read() As Integer
 
-    Return $_SomeInteger
+    Return $iSomeInteger
 
 End
 
 Private Sub SomeInteger_Write(Value As Integer)
 
-    $_SomeInteger = Value
-    Me.Saved = False
+    If $iSomeInteger <> Value Then
+        $iSomeInteger = Value
+        Me.Dirty = True
+    Endif
 
 End
 
 '
 'Methods
 '
+Public Sub SaveToSettings()
 
+    If IsNull(Me.key) Then
+        Error.Raise("OpenFromSettings: model.Key is null")
+    Endif
+
+    Settings[Me.Key & "/SomeString"] = Me.SomeString
+    Settings[Me.Key & "/SomeBoolean"] = Me.SomeBoolean
+    Settings[Me.Key & "/SomeInteger"] = Me.SomeInteger
+    'Settings.Write(Me, "SomeModel")
+    Settings.Save
+
+    Me.Dirty = False
+Catch
+    Debug Log.FormatError
+
+End
+
+Public Function OpenFromSettings() As SomeModel 'model As SomeModel
+
+    Dim returnValue As SomeModel
+
+    ' If IsNull(model) Then
+    '     Error.Raise("OpenFromSettings: model is null")
+    ' Endif
+
+    If IsNull(Me.key) Then
+        Error.Raise("OpenFromSettings: model.Key is null")
+    Endif
+
+    returnValue = New SomeModel
+
+    'setting these will set Dirty property...
+    returnValue.Key = Me.Key
+
+    returnValue.SomeString = Settings[Me.Key & "/SomeString"] 'TODO;test for non-existant key and other bad values
+    returnValue.SomeBoolean = Settings[Me.Key & "/SomeBoolean"]
+    returnValue.SomeInteger = Settings[Me.Key & "/SomeInteger"]
+
+    '...so clear dirty flag after retrieving saved values
+    returnValue.Dirty = False
+Finally
+    Return returnValue
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+    Debug "Key: " & Me.Key
+
+End

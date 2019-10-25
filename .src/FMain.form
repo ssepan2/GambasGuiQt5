@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
+  MoveScaled(0,0,114.2857,85.7143)
   Expand = True
   Icon = Picture["icon:/32/gnu"]
   AutoResize = True
@@ -10,20 +10,85 @@
     Text = Shortcut(("File"), "F")
     { MenuFileNew Menu
       Text = Shortcut(("New"), "N")
+      Picture = Picture["icon:/22/new"]
     }
     { MenuFileOpen Menu
       Text = Shortcut(("Open"), "O") & "..."
+      Picture = Picture["icon:/22/open"]
     }
     { MenuFileSave Menu
       Text = Shortcut(("Save"), "S")
+      Picture = Picture["icon:/22/save"]
     }
     { MenuFileSaveAs Menu
       Text = Shortcut(("Save As"), "a") & "..."
+      Picture = Picture["icon:/22/save-as"]
     }
     { Menu1 Menu
     }
+    { MenuFilePrint Menu
+      Text = Shortcut(("Print"), "P") & "..."
+      Picture = Picture["icon:/22/print"]
+    }
+    { Menu2 Menu
+    }
     { MenuFileExit Menu
       Text = Shortcut(("Exit"), "x")
+    }
+  }
+  { MenuEdit Menu
+    Text = Shortcut(("Edit"), "E")
+    { MenuEditUndo Menu
+      Text = Shortcut(("Undo"), "U")
+      Picture = Picture["icon:/22/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { MenuEditRedo Menu
+      Text = Shortcut(("Redo"), "R")
+      Picture = Picture["icon:/22/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { Menu4 Menu
+    }
+    { MenuEditCut Menu
+      Text = Shortcut(("Cut"), "t")
+      Picture = Picture["icon:/22/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { MenuEditCopy Menu
+      Text = Shortcut(("Copy"), "C")
+      Picture = Picture["icon:/22/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { MenuEditPaste Menu
+      Text = Shortcut(("Paste"), "P")
+      Picture = Picture["icon:/22/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { MenuEditDelete Menu
+      Text = Shortcut(("Delete"), "D")
+      Picture = Picture["icon:/22/delete"]
+      Shortcut = "Del"
+    }
+    { Menu5 Menu
+    }
+    { MenuEditFind Menu
+      Text = Shortcut(("Find"), "F") & "..."
+      Picture = Picture["icon:/22/find"]
+      Shortcut = "Ctrl+F"
+    }
+    { Menu6 Menu
+    }
+    { MenuEditRefresh Menu
+      Text = ("Refresh")
+      Picture = Picture["icon:/22/refresh"]
+      Shortcut = "F5"
+    }
+    { Menu3 Menu
+    }
+    { MenuEditProperties Menu
+      Text = Shortcut(("Preferences"), "n") & "..."
+      Picture = Picture["icon:/22/properties"]
     }
   }
   { MenuHelp Menu
@@ -43,70 +108,137 @@
       Picture = Picture["icon:/22/new"]
     }
     { ToolButtonFileOpen ToolButton
-      MoveScaled(3,0,4,4)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Open")
       AutoResize = True
       Picture = Picture["icon:/22/open"]
     }
     { ToolButtonFileSave ToolButton
-      MoveScaled(6,0,4,4)
+      MoveScaled(8,0,4,4)
       ToolTip = ("Save")
       AutoResize = True
       Picture = Picture["icon:/22/save"]
     }
     { ToolButtonFileSaveAs ToolButton
-      MoveScaled(9,0,4,4)
+      MoveScaled(12,0,4,4)
       ToolTip = ("Save As") & "..."
       AutoResize = True
       Picture = Picture["icon:/22/save-as"]
     }
+    { ToolButtonFilePrint ToolButton
+      MoveScaled(16,0,4,4)
+      ToolTip = ("Print ") & "..."
+      Picture = Picture["icon:/22/print"]
+    }
+    { ToolButtonEditUndo ToolButton
+      MoveScaled(21,0,4,4)
+      ToolTip = ("Undo")
+      Picture = Picture["icon:/22/undo"]
+    }
+    { ToolButtonEditRedo ToolButton
+      MoveScaled(25,0,4,4)
+      ToolTip = ("Redo")
+      Picture = Picture["icon:/22/redo"]
+    }
+    { ToolButtonEditCut ToolButton
+      MoveScaled(29,0,4,4)
+      ToolTip = ("Cut")
+      Picture = Picture["icon:/22/cut"]
+    }
+    { ToolButtonEditCopy ToolButton
+      MoveScaled(33,0,4,4)
+      ToolTip = ("Copy")
+      Picture = Picture["icon:/22/copy"]
+    }
+    { ToolButtonEditPaste ToolButton
+      MoveScaled(37,0,4,4)
+      ToolTip = ("Paste")
+      Picture = Picture["icon:/22/paste"]
+    }
+    { ToolButtonEditDelete ToolButton
+      MoveScaled(41,0,4,4)
+      ToolTip = ("Delete")
+      Picture = Picture["icon:/22/delete"]
+    }
+    { ToolButtonEditFind ToolButton
+      MoveScaled(45,0,4,4)
+      ToolTip = ("Find")
+      Picture = Picture["icon:/22/find"]
+    }
+    { ToolButtonEditRefresh ToolButton
+      MoveScaled(49,0,4,4)
+      ToolTip = ("Refresh")
+      Picture = Picture["icon:/22/refresh"]
+    }
+    { ToolButtonEditProperties ToolButton
+      MoveScaled(53,0,4,4)
+      ToolTip = ("Preferences")
+      Picture = Picture["icon:/22/properties"]
+    }
   }
   { Panel1 Panel
-    MoveScaled(1,55,62,5)
+    MoveScaled(1,76,112,5)
     Expand = True
     AutoResize = True
     Border = Border.Sunken
-    { StatusLabel Label
-      MoveScaled(1,1,31,3)
+    { lblStatusMessage Label
+      MoveScaled(1,0,80,3)
+      Foreground = Color.DarkGreen
     }
-    { StatusPictureBox PictureBox
-      MoveScaled(58,1,4,3)
+    { StatusActionIcon PictureBox
+      MoveScaled(104,1,3.1429,3.1429)
+      Visible = False
       AutoResize = True
     }
     { StatusProgressBar ProgressBar
-      MoveScaled(33,1,24,3)
+      MoveScaled(87,1,16,3)
+      Visible = False
+    }
+    { lblErrorMessage Label
+      MoveScaled(1,2,80,3)
+      Foreground = Color.Red
+    }
+    { Spring2 Spring
+      MoveScaled(82,0,4,4)
+    }
+    { StatusDirtyIcon PictureBox
+      MoveScaled(108,1,3.1429,3.1429)
+      Visible = False
+      ToolTip = ("Dirty")
+      AutoResize = True
+      Picture = Picture["icon:/22/save"]
     }
   }
   { Panel2 Panel
-    MoveScaled(2,5,60,14)
+    MoveScaled(1,5,61,14)
     { SomeStringLabel Label
-      MoveScaled(0,0,12,4)
+      MoveScaled(0,0,13,4)
       Text = ("Some String:")
       Alignment = Align.Right
     }
     { SomeStringTextBox TextBox
-      MoveScaled(13,0,24,4)
+      MoveScaled(14,0,24,4)
     }
     { SomeIntegerLabel Label
-      MoveScaled(0,5,12,4)
+      MoveScaled(0,5,13,4)
       Text = ("Some Integer:")
       Alignment = Align.Right
     }
     { SomeIntegerValueBox ValueBox
-      MoveScaled(13,5,24,4)
+      MoveScaled(14,5,24,4)
       Alignment = Align.Right
     }
     { SomeBooleanLabel Label
-      MoveScaled(0,10,12,4)
+      MoveScaled(0,10,13,4)
       Text = ("Some Boolean:")
       Alignment = Align.Right
     }
     { SomeBooleanCheckBox CheckBox
-      MoveScaled(13,10,3,4)
+      MoveScaled(14,10,3,4)
     }
   }
   { HBox1 HBox
-    MoveScaled(2,49,60,4)
+    MoveScaled(1,69,112,4)
     Expand = True
     AutoResize = True
     { Spring1 Spring
@@ -116,5 +248,15 @@
       MoveScaled(44,0,16,4)
       Text = ("Close")
     }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action FileNew
+    Text = "New"
+    Shortcut = ""
+    Picture = "icon:/22/new"
   }
 }
