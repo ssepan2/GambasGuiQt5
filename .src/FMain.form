@@ -9,10 +9,12 @@
   { MenuFile Menu
     Text = Shortcut(("File"), "F")
     { MenuFileNew Menu
+      Action = "FileNew"
       Text = Shortcut(("New"), "N")
       Picture = Picture["icon:/22/new"]
     }
     { MenuFileOpen Menu
+      Action = "FileOpen"
       Text = Shortcut(("Open"), "O") & "..."
       Picture = Picture["icon:/22/open"]
     }
@@ -21,29 +23,34 @@
       Picture = Picture["icon:/22/save"]
     }
     { MenuFileSaveAs Menu
+      Action = "FileSaveAs"
       Text = Shortcut(("Save As"), "a") & "..."
       Picture = Picture["icon:/22/save-as"]
     }
     { Menu1 Menu
     }
     { MenuFilePrint Menu
+      Action = "FilePrint"
       Text = Shortcut(("Print"), "P") & "..."
       Picture = Picture["icon:/22/print"]
     }
     { Menu2 Menu
     }
     { MenuFileExit Menu
+      Action = "FileExit"
       Text = Shortcut(("Exit"), "x")
     }
   }
   { MenuEdit Menu
     Text = Shortcut(("Edit"), "E")
     { MenuEditUndo Menu
+      Action = "EditUndo"
       Text = Shortcut(("Undo"), "U")
       Picture = Picture["icon:/22/undo"]
       Shortcut = "Ctrl+Z"
     }
     { MenuEditRedo Menu
+      Action = "EditRedo"
       Text = Shortcut(("Redo"), "R")
       Picture = Picture["icon:/22/redo"]
       Shortcut = "Ctrl+Y"
@@ -51,21 +58,25 @@
     { Menu4 Menu
     }
     { MenuEditCut Menu
+      Action = "EditCut"
       Text = Shortcut(("Cut"), "t")
       Picture = Picture["icon:/22/cut"]
       Shortcut = "Ctrl+X"
     }
     { MenuEditCopy Menu
+      Action = "EditCopy"
       Text = Shortcut(("Copy"), "C")
       Picture = Picture["icon:/22/copy"]
       Shortcut = "Ctrl+C"
     }
     { MenuEditPaste Menu
+      Action = "EditPaste"
       Text = Shortcut(("Paste"), "P")
       Picture = Picture["icon:/22/paste"]
       Shortcut = "Ctrl+V"
     }
     { MenuEditDelete Menu
+      Action = "EditDelete"
       Text = Shortcut(("Delete"), "D")
       Picture = Picture["icon:/22/delete"]
       Shortcut = "Del"
@@ -73,6 +84,7 @@
     { Menu5 Menu
     }
     { MenuEditFind Menu
+      Action = "EditFind"
       Text = Shortcut(("Find"), "F") & "..."
       Picture = Picture["icon:/22/find"]
       Shortcut = "Ctrl+F"
@@ -80,6 +92,7 @@
     { Menu6 Menu
     }
     { MenuEditRefresh Menu
+      Action = "EditRefresh"
       Text = ("Refresh")
       Picture = Picture["icon:/22/refresh"]
       Shortcut = "F5"
@@ -87,6 +100,7 @@
     { Menu3 Menu
     }
     { MenuEditProperties Menu
+      Action = "EditPreferences"
       Text = Shortcut(("Preferences"), "n") & "..."
       Picture = Picture["icon:/22/properties"]
     }
@@ -104,75 +118,89 @@
     { ToolButtonFileNew ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("New")
+      Action = "FileNew"
       AutoResize = True
       Picture = Picture["icon:/22/new"]
     }
     { ToolButtonFileOpen ToolButton
       MoveScaled(4,0,4,4)
       ToolTip = ("Open")
+      Action = "FileOpen"
       AutoResize = True
       Picture = Picture["icon:/22/open"]
     }
     { ToolButtonFileSave ToolButton
       MoveScaled(8,0,4,4)
       ToolTip = ("Save")
+      Action = "FileSave"
       AutoResize = True
       Picture = Picture["icon:/22/save"]
     }
     { ToolButtonFileSaveAs ToolButton
       MoveScaled(12,0,4,4)
       ToolTip = ("Save As") & "..."
+      Action = "FileSaveAs"
       AutoResize = True
       Picture = Picture["icon:/22/save-as"]
     }
     { ToolButtonFilePrint ToolButton
       MoveScaled(16,0,4,4)
       ToolTip = ("Print ") & "..."
+      Action = "FilePrint"
       Picture = Picture["icon:/22/print"]
     }
     { ToolButtonEditUndo ToolButton
       MoveScaled(21,0,4,4)
       ToolTip = ("Undo")
+      Action = "EditUndo"
       Picture = Picture["icon:/22/undo"]
     }
     { ToolButtonEditRedo ToolButton
       MoveScaled(25,0,4,4)
       ToolTip = ("Redo")
+      Action = "EditRedo"
       Picture = Picture["icon:/22/redo"]
     }
     { ToolButtonEditCut ToolButton
       MoveScaled(29,0,4,4)
       ToolTip = ("Cut")
+      Action = "EditCut"
       Picture = Picture["icon:/22/cut"]
     }
     { ToolButtonEditCopy ToolButton
       MoveScaled(33,0,4,4)
       ToolTip = ("Copy")
+      Action = "EditCopy"
       Picture = Picture["icon:/22/copy"]
     }
     { ToolButtonEditPaste ToolButton
       MoveScaled(37,0,4,4)
       ToolTip = ("Paste")
+      Action = "EditPaste"
       Picture = Picture["icon:/22/paste"]
     }
     { ToolButtonEditDelete ToolButton
       MoveScaled(41,0,4,4)
       ToolTip = ("Delete")
+      Action = "EditDelete"
       Picture = Picture["icon:/22/delete"]
     }
     { ToolButtonEditFind ToolButton
       MoveScaled(45,0,4,4)
       ToolTip = ("Find")
+      Action = "EditFind"
       Picture = Picture["icon:/22/find"]
     }
     { ToolButtonEditRefresh ToolButton
       MoveScaled(49,0,4,4)
       ToolTip = ("Refresh")
+      Action = "EditRefresh"
       Picture = Picture["icon:/22/refresh"]
     }
     { ToolButtonEditProperties ToolButton
       MoveScaled(53,0,4,4)
       ToolTip = ("Preferences")
+      Action = "EditPreferences"
       Picture = Picture["icon:/22/properties"]
     }
   }
@@ -234,7 +262,7 @@
       Alignment = Align.Right
     }
     { SomeBooleanCheckBox CheckBox
-      MoveScaled(14,10,3,4)
+      MoveScaled(14,10,4,4)
     }
   }
   { HBox1 HBox
@@ -254,9 +282,77 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action EditCopy
+    Text = "Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/22/copy"
+  }
+  { Action EditCut
+    Text = "Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/22/cut"
+  }
+  { Action EditDelete
+    Text = "Delete"
+    Shortcut = "Del"
+    Picture = "icon:/22/delete"
+  }
+  { Action EditFind
+    Text = "Find"
+    Shortcut = "Ctrl+F"
+    Picture = "icon:/22/find"
+  }
+  { Action EditPaste
+    Text = "Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/22/paste"
+  }
+  { Action EditPreferences
+    Text = "Preferences"
+    Shortcut = ""
+    Picture = "icon:/22/properties"
+  }
+  { Action EditRedo
+    Text = "Redo"
+    Shortcut = "Ctrl+Y"
+    Picture = "icon:/22/redo"
+  }
+  { Action EditRefresh
+    Text = "Refresh"
+    Shortcut = "F5"
+    Picture = "icon:/22/refresh"
+  }
+  { Action EditUndo
+    Text = "Undo"
+    Shortcut = "Ctrl+Z"
+    Picture = "icon:/22/undo"
+  }
+  { Action FileExit
+    Text = "Exit"
+    Shortcut = ""
+  }
   { Action FileNew
     Text = "New"
     Shortcut = ""
     Picture = "icon:/22/new"
+  }
+  { Action FileOpen
+    Text = "Open"
+    Shortcut = ""
+    Picture = "icon:/22/open"
+  }
+  { Action FilePrint
+    Text = "Print"
+    Shortcut = ""
+    Picture = "icon:/22/print"
+  }
+  { Action FileSave
+    Text = "Save"
+    Picture = "icon:/22/save"
+  }
+  { Action FileSaveAs
+    Text = "Save As"
+    Shortcut = ""
+    Picture = "icon:/22/save-as"
   }
 }

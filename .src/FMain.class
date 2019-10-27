@@ -383,7 +383,8 @@ Public Sub FileNew()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("New...", Null, Picture["icon:/22/new"], True, 33)
+    StartProgressBarWithPicture("New...", Null, Action["FileNew"].Picture, True, 33)
+    Action["FileNew"].Enabled = False
 
     If bCancel Then
         sStatusMessage = "New cancelled."
@@ -396,6 +397,7 @@ Public Sub FileNew()
         sStatusMessage = "New completed"
     Endif
 Finally
+    Action["FileNew"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError 'TODO:get this dump into a log file
@@ -431,7 +433,8 @@ Public Sub FileOpen()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Opening...", Null, Picture["icon:/22/open"], True, 33)
+    StartProgressBarWithPicture("Opening...", Null, Action["FileOpen"].Picture, True, 33)
+    Action["FileOpen"].Enabled = False
 
     If bCancel Then
         sStatusMessage = "Open cancelled during Save."
@@ -454,6 +457,7 @@ Public Sub FileOpen()
         Endif
     Endif
 Finally
+    Action["FileOpen"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -474,9 +478,11 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
     lblErrorMessage.Text = ""
 
     If bSaveAs Then
-        StartProgressBarWithPicture("Saving As...", Null, Picture["icon:/22/saveas"], True, 33)
+        StartProgressBarWithPicture("Saving As...", Null, Action["FileSaveAs"].Picture, True, 33)
+        Action["FileSaveAs"].Enabled = False
     Else
-        StartProgressBarWithPicture("Saving...", Null, Picture["icon:/22/save"], True, 33)
+        StartProgressBarWithPicture("Saving...", Null, Action["FileSave"].Picture, True, 33)
+        Action["FileSave"].Enabled = False
     Endif
 
     If IsNull(_model.Key) Or bSaveAs Then
@@ -493,6 +499,11 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
 
     RefreshModel
 Finally
+    If bSaveAs Then
+        Action["FileSaveAs"].Enabled = True
+    Else
+        Action["FileSave"].Enabled = True
+    Endif
     StopProgressBar("Saved.")
 Catch
     Debug Log.FormatError
@@ -508,7 +519,8 @@ Public Sub FilePrint()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Printing...", Null, Picture["icon:/22/print"], True, 33)
+    StartProgressBarWithPicture("Printing...", Null, Action["FilePrint"].Picture, True, 33)
+    Action["FilePrint"].Enabled = False
 
     If Something() Then 'TODO:print
         sStatusMessage = "Printed."
@@ -516,6 +528,7 @@ Public Sub FilePrint()
         sStatusMessage = "Print cancelled."
     Endif
 Finally
+    Action["FilePrint"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -569,7 +582,8 @@ Public Sub EditUndo()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Undo...", Null, Picture["icon:/22/undo"], True, 33)
+    StartProgressBarWithPicture("Undo...", Null, Action["EditUndo"].Picture, True, 33)
+    Action["EditUndo"].Enabled = False
 
     If Something() Then 'TODO:undo
         sStatusMessage = "Undo done."
@@ -577,6 +591,7 @@ Public Sub EditUndo()
         sStatusMessage = "Undo cancelled."
     Endif
 Finally
+    Action["EditUndo"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -592,7 +607,8 @@ Public Sub EditRedo()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Redo...", Null, Picture["icon:/22/redo"], True, 33)
+    StartProgressBarWithPicture("Redo...", Null, Action["EditRedo"].Picture, True, 33)
+    Action["EditRedo"].Enabled = False
 
     If Something() Then 'TODO: redo
         sStatusMessage = "Redo done."
@@ -600,6 +616,7 @@ Public Sub EditRedo()
         sStatusMessage = "Redo cancelled."
     Endif
 Finally
+    Action["EditRedo"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -615,7 +632,8 @@ Public Sub EditCut()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Cut...", Null, Picture["icon:/22/cut"], True, 33)
+    StartProgressBarWithPicture("Cut...", Null, Action["EditCut"].Picture, True, 33)
+    Action["EditCut"].Enabled = False
 
     If Something() Then 'TODO:cut
         sStatusMessage = "Cut done."
@@ -623,6 +641,7 @@ Public Sub EditCut()
         sStatusMessage = "Cut cancelled."
     Endif
 Finally
+    Action["EditCut"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -638,7 +657,8 @@ Public Sub EditCopy()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Copying...", Null, Picture["icon:/22/copy"], True, 33)
+    StartProgressBarWithPicture("Copying...", Null, Action["EditCopy"].Picture, True, 33)
+    Action["EditCopy"].Enabled = False
 
     If Something() Then 'TODO:copy
         sStatusMessage = "Copy done."
@@ -646,6 +666,7 @@ Public Sub EditCopy()
         sStatusMessage = "Copy cancelled."
     Endif
 Finally
+    Action["EditCopy"].Enabled = True
     StopProgressBar("Copied.")
 Catch
     Debug Log.FormatError
@@ -661,7 +682,8 @@ Public Sub EditPaste()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Paste...", Null, Picture["icon:/22/paste"], True, 33)
+    StartProgressBarWithPicture("Paste...", Null, Action["EditPaste"].Picture, True, 33)
+    Action["EditPaste"].Enabled = False
 
     If Something() Then 'TODO:paste
         sStatusMessage = "Paste done."
@@ -669,6 +691,7 @@ Public Sub EditPaste()
         sStatusMessage = "Paste cancelled."
     Endif
 Finally
+    Action["EditPaste"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -684,7 +707,8 @@ Public Sub EditDelete()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Delete...", Null, Picture["icon:/22/delete"], True, 33)
+    StartProgressBarWithPicture("Delete...", Null, Action["EditDelete"].Picture, True, 33)
+    Action["EditDelete"].Enabled = False
 
     If Something() Then 'TODO:delete
         sStatusMessage = "Delete done."
@@ -692,6 +716,7 @@ Public Sub EditDelete()
         sStatusMessage = "Delete cancelled."
     Endif
 Finally
+    Action["EditDelete"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -707,7 +732,8 @@ Public Sub EditFind()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Find...", Null, Picture["icon:/22/find"], True, 33)
+    StartProgressBarWithPicture("Find...", Null, Action["EditFind"].Picture, True, 33)
+    Action["EditFind"].Enabled = False
 
     If Something() Then 'TODO:find
         sStatusMessage = "Find done."
@@ -715,6 +741,7 @@ Public Sub EditFind()
         sStatusMessage = "Find cancelled."
     Endif
 Finally
+    Action["EditFind"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -730,7 +757,8 @@ Public Sub EditRefresh()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Refresh...", Null, Picture["icon:/22/refresh"], True, 33)
+    StartProgressBarWithPicture("Refresh...", Null, Action["EditRefresh"].Picture, True, 33)
+    Action["EditRefresh"].Enabled = False
 
     If Something() Then 'TODO:refresh
         sStatusMessage = "Refresh done."
@@ -738,6 +766,7 @@ Public Sub EditRefresh()
         sStatusMessage = "Refresh cancelled."
     Endif
 Finally
+    Action["EditRefresh"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -753,7 +782,8 @@ Public Sub EditPreferences()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Preferences...", Null, Picture["icon:/22/properties"], True, 33)
+    StartProgressBarWithPicture("Preferences...", Null, Action["EditPreferences"].Picture, True, 33)
+    Action["EditPreferences"].Enabled = False
 
     If Something() Then 'TODO:Preferences
         sStatusMessage = "Preferences done."
@@ -761,6 +791,7 @@ Public Sub EditPreferences()
         sStatusMessage = "Preferences cancelled."
     Endif
 Finally
+    Action["EditPreferences"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
@@ -775,9 +806,11 @@ Public Sub HelpAbout()
     lblErrorMessage.Text = ""
 
     StartProgressBarWithPicture("About...", Null, Null, True, 33)
+    Action["HelpAbout"].Enabled = False
 
-    Message("About " & Dialogs.FormatAbout(Application))
+    Message("About " & Dialogs.FormatAbout())
 Finally
+    Action["HelpAbout"].Enabled = True
     StopProgressBar("About completed.")
 Catch 'ex As Exception
     Debug Log.FormatError 'Log.Write( Error , System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
