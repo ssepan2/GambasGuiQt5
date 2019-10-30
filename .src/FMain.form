@@ -12,15 +12,18 @@
       Action = "FileNew"
       Text = Shortcut(("New"), "N")
       Picture = Picture["icon:/22/new"]
+      Shortcut = "Ctrl+N"
     }
     { MenuFileOpen Menu
       Action = "FileOpen"
       Text = Shortcut(("Open"), "O") & "..."
       Picture = Picture["icon:/22/open"]
+      Shortcut = "Ctrl+O"
     }
     { MenuFileSave Menu
       Text = Shortcut(("Save"), "S")
       Picture = Picture["icon:/22/save"]
+      Shortcut = "Ctrl+S"
     }
     { MenuFileSaveAs Menu
       Action = "FileSaveAs"
@@ -33,12 +36,14 @@
       Action = "FilePrint"
       Text = Shortcut(("Print"), "P") & "..."
       Picture = Picture["icon:/22/print"]
+      Shortcut = "Ctrl+P"
     }
     { Menu2 Menu
     }
     { MenuFileExit Menu
       Action = "FileExit"
       Text = Shortcut(("Exit"), "x")
+      Shortcut = "Ctrl+Q"
     }
   }
   { MenuEdit Menu
@@ -329,21 +334,21 @@
   }
   { Action FileExit
     Text = "Exit"
-    Shortcut = ""
+    Shortcut = "Ctrl+Q"
   }
   { Action FileNew
     Text = "New"
-    Shortcut = ""
+    Shortcut = "Ctrl+N"
     Picture = "icon:/22/new"
   }
   { Action FileOpen
     Text = "Open"
-    Shortcut = ""
+    Shortcut = "Ctrl+O"
     Picture = "icon:/22/open"
   }
   { Action FilePrint
     Text = "Print"
-    Shortcut = ""
+    Shortcut = "Ctrl+P"
     Picture = "icon:/22/print"
   }
   { Action FileSave

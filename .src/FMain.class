@@ -6,49 +6,52 @@ Private $bStopControlEvents As Boolean = False
 ' #End Region
 
 ' #Region "Constructors"
-' Public Sub FMain_new()
+' Public Sub _new()
 ' End
 ' #End Region
 
 ' #Region "INotifyPropertyChanged"
-' Event PropertyChanged '(propertyName As String)
-' Private $obsPropertyChanged As Observer
-
-' Public Sub NotifyPropertyChanged(propertyName As String)
-'     ' Dim bResult As Boolean = False
-'
-'     Debug "PropertyChanged fired: " & propertyName
-'     FMain_PropertyChanged(propertyName) 'can't get events to fire; brute-force it...
-'     'bResult = Raise PropertyChanged(propertyName) 'As "FMain_PropertyChanged"
-'     ' If bResult Then
-'     '       Debug "PropertyChanged cancelled: " & propertyName
-'     '   Endif
-'
-' End 'Sub
+Public $obsPropertyChanged As Observer
 ' #End Region
 
 ' #Region "PropertyChanged Handlers"
-' ''' <summary>
-' ''' Handler for PropertyChanged on the Settings field 'Dirty'.
-' ''' </summary>
-' Public Sub FMain_PropertyChanged(propertyName As String)
-'
-'     Select propertyName
-'         Case "SomeString"
-'         Case "SomeInteger"
-'         Case "SomeBoolean"
-'             ' Case "XXX"
-'         Case Else
-'             Raise Error("unhandled event:" & propertyName)
-'     End Select
-'     Debug "PropertyChanged handled: " & propertyName
-'     ' Stop Event
-'
-' End
+''' <summary>
+''' Handler for PropertyChanged on the Settings field 'Dirty'.
+''' </summary>
+Public Sub _model_PropertyChanged(propertyName As String)
+
+    $bStopControlEvents = True
+
+    Select propertyName
+        Case "SomeString"
+            SomeStringTextBox.text = _model.SomeString
+            Debug propertyName & ": " & _model.SomeString
+        Case "SomeInteger"
+            SomeIntegerValueBox.value = _model.SomeInteger
+            Debug propertyName & ": " & _model.SomeInteger
+        Case "SomeBoolean"
+            SomeBooleanCheckBox.Value = _model.SomeBoolean
+            Debug propertyName & ": " & _model.SomeBoolean
+        Case "Dirty"
+            StatusDirtyIcon.Visible = _model.Dirty
+            Debug propertyName & ": " & _model.Dirty
+            ' Case "XXX"
+        Case Else
+            Debug "unhandled event:" & propertyName
+            'Raise Error("unhandled event:" & propertyName)
+    End Select
+    Debug "PropertyChanged handled: " & propertyName
+    ' Stop Event
+Finally
+    $bStopControlEvents = False
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+End
 ' #End Region
 
 ' #Region "Properties"
-
 ' #End Region
 
 ' #Region "Methods"
@@ -58,10 +61,6 @@ Private $bStopControlEvents As Boolean = False
 '
 
 Public Sub Form_Open()
-
-    '$obsPropertyChanged = New Observer(Me) As "FMain_PropertyChanged"
-
-    ' Object.Attach(Me, Null, "FMain_PropertyChanged")
 
     Me.Top = Settings["FMain/Top", Me.Top]
     Me.Left = Settings["FMain/Left", Me.Left]
@@ -84,21 +83,6 @@ Public Sub Form_Close()
     Settings["FMain/Left"] = Me.Left
     Settings["FMain/Height"] = Me.Height
     Settings["FMain/Width"] = Me.Width
-
-End
-
-Public Sub UpdateForm()
-    'prevent control events from firing while being loaded from model
-
-    $bStopControlEvents = True
-    SomeStringTextBox.text = _model.SomeString
-    SomeIntegerValueBox.value = _model.SomeInteger
-    SomeBooleanCheckBox.Value = _model.SomeBoolean
-Finally
-    $bStopControlEvents = False
-Catch
-    Debug Log.FormatError
-    Debug Error.Text
 
 End
 
@@ -301,10 +285,9 @@ Public Sub SomeStringTextBox_Change()
 
     If $bStopControlEvents Then
         Stop Event
+    Else
+        _model.SomeString = SomeStringTextBox.text
     Endif
-
-    _model.SomeString = SomeStringTextBox.text
-    CheckDirty
 
 End
 
@@ -312,10 +295,9 @@ Public Sub SomeIntegerValueBox_Change()
 
     If $bStopControlEvents Then
         Stop Event
+    Else
+        _model.SomeInteger = SomeIntegerValueBox.Value
     Endif
-
-    _model.SomeInteger = SomeIntegerValueBox.Value
-    CheckDirty
 
 End
 
@@ -323,39 +305,52 @@ Public Sub SomeBooleanCheckBox_Click()
 
     If $bStopControlEvents Then
         Stop Event
+    Else
+        _model.SomeBoolean = SomeBooleanCheckBox.Value
     Endif
 
-    _model.SomeBoolean = SomeBooleanCheckBox.Value
-    CheckDirty
-
 End
 
-Public Sub CheckDirty()
+' Public Sub CheckDirty()
+'
+'     StatusDirtyIcon.Visible = _model.Dirty
+'
+' End
 
-    StatusDirtyIcon.Visible = _model.Dirty
-
-End
+' Public Sub UpdateForm()
+'     'prevent control events from firing while being loaded from model
+'
+'     $bStopControlEvents = True
+'     SomeStringTextBox.text = _model.SomeString
+'     SomeIntegerValueBox.value = _model.SomeInteger
+'     SomeBooleanCheckBox.Value = _model.SomeBoolean
+' Finally
+'     $bStopControlEvents = False
+' Catch
+'     Debug Log.FormatError
+'     Debug Error.Text
+'
+' End
 
 '
 ' ViewModel
 '
 
-'TODO:put here if cannot init in main moduile
-
 ''' <summary>
 ''' Call for any action that loads or creates settings (New, Open).
 ''' </summary>
-Public Sub RefreshModel()
-
-    'Wait
-    UpdateForm
-    CheckDirty
-
-Catch 'ex As Exception
-    lblErrorMessage.Text = Log.FormatError
-    Debug lblErrorMessage.Text
-
-End 'Sub
+' Public Sub RefreshModel()
+'
+'     'Wait
+'     'TODO:make model reload controls?
+'     'UpdateForm
+'     'CheckDirty
+'
+' Catch 'ex As Exception
+'     lblErrorMessage.Text = Log.FormatError
+'     Debug lblErrorMessage.Text
+'
+' End 'Sub
 
 Public Sub FileNew()
 
@@ -390,9 +385,9 @@ Public Sub FileNew()
         sStatusMessage = "New cancelled."
     Else
         'NEW
-        _model = New SomeModel
+        _model = New SomeModel(Me, "_model")
 
-        RefreshModel
+        _model.RefreshModel
         StopProgressBar("New completed")
         sStatusMessage = "New completed"
     Endif
@@ -411,6 +406,7 @@ Public Sub FileOpen()
     Dim bCancel As Boolean = False
     Dim response As String = Null
     Dim sStatusMessage As String
+    ' Dim sErrormessage As String
 
     If Not IsNull(_model) Then
         If _model.Dirty Then
@@ -439,7 +435,7 @@ Public Sub FileOpen()
     If bCancel Then
         sStatusMessage = "Open cancelled during Save."
     Else
-        response = InputBox("Enter Name for model:", "Open...", _model.Key)
+        response = InputBox("Enter Name for model:", "Open...", Null)
         If Not IsNull(response) Then
             _model.Key = response
         Else
@@ -450,10 +446,15 @@ Public Sub FileOpen()
             sStatusMessage = "Open cancelled during model name input."
         Else
             'OPEN
-            _model = _model.OpenFromSettings()
-            RefreshModel
+            If _model.OpenFromSettings() Then
 
-            sStatusMessage = "Opened."
+                sStatusMessage = "Opened."
+            Else
+                'clear model on failure; NEW
+                _model = New SomeModel(Me, "_model")
+                _model.RefreshModel
+                Error.Raise("Unable to Open: '" & response & "'")
+            Endif
         Endif
     Endif
 Finally
@@ -466,13 +467,15 @@ Catch
 
 End 'Sub
 
-'''// <summary>
-'''// Write model to settings
-'''// </summary>
-'''// <param name="bSaveAs">Boolean. Force SaveAs prompt for name</param>
+'' <summary>
+'' Write model to settings
+'' </summary>
+'' <param name="bSaveAs">Boolean. Force SaveAs prompt for name</param>
 Public Sub FileSave(Optional bSaveAs As Boolean = False)
 
+    Dim bCancel As Boolean = False
     Dim response As String = Null
+    Dim sStatusMessage As String
 
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
@@ -486,25 +489,29 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
     Endif
 
     If IsNull(_model.Key) Or bSaveAs Then
-        response = InputBox("Enter Name for model:", "Save As...", _model.Key)
+        response = InputBox("Enter Name for model:", "Save As...", Null)
         If Not IsNull(response) Then
             _model.Key = response
         Else
-            Error.Raise("Null model Name entered: " & response)
+            bCancel = True
         Endif
     Endif
 
-    'SAVE
-    _model.SaveToSettings 'TODO:if saveas, read and if already present, prompt to replace
+    If bCancel Then
+        sStatusMessage = "Save cancelled during model name input."
+    Else
+        'SAVE
+        _model.SaveToSettings 'TODO:if saveas, read and if already present, prompt to replace
+        sStatusMessage = "Saved."
+    Endif
 
-    RefreshModel
 Finally
     If bSaveAs Then
         Action["FileSaveAs"].Enabled = True
     Else
         Action["FileSave"].Enabled = True
     Endif
-    StopProgressBar("Saved.")
+    StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
 

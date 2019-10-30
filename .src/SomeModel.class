@@ -2,6 +2,17 @@
 
 Class SomeModel Inherits ModelBase
 
+Private $bForceNotify As Boolean = False
+
+'
+'ctor()
+'
+Public Sub _new(frmView As Form, sModelInstance As String)
+
+    Object.Attach(Me, frmView, sModelInstance)
+
+End
+
 '
 'Properties
 '
@@ -16,9 +27,10 @@ End
 
 Private Sub SomeString_Write(Value As String)
 
-    If $sSomeString <> Value Then
+    If ($sSomeString <> Value) Or $bForceNotify Then
         $sSomeString = Value
         Me.Dirty = True
+        Me.NotifyPropertyChanged("SomeString")
     Endif
 
 End
@@ -34,9 +46,10 @@ End
 
 Private Sub SomeBoolean_Write(Value As Boolean)
 
-    If $bSomeBoolean <> Value Then
+    If ($bSomeBoolean <> Value) Or $bForceNotify Then
         $bSomeBoolean = Value
         Me.Dirty = True
+        Me.NotifyPropertyChanged("SomeBoolean")
     Endif
 
 End
@@ -52,9 +65,10 @@ End
 
 Private Sub SomeInteger_Write(Value As Integer)
 
-    If $iSomeInteger <> Value Then
+    If ($iSomeInteger <> Value) Or $bForceNotify Then
         $iSomeInteger = Value
         Me.Dirty = True
+        Me.NotifyPropertyChanged("SomeInteger")
     Endif
 
 End
@@ -71,18 +85,20 @@ Public Sub SaveToSettings()
     Settings[Me.Key & "/SomeString"] = Me.SomeString
     Settings[Me.Key & "/SomeBoolean"] = Me.SomeBoolean
     Settings[Me.Key & "/SomeInteger"] = Me.SomeInteger
-    'Settings.Write(Me, "SomeModel")
     Settings.Save
 
     Me.Dirty = False
 Catch
     Debug Log.FormatError
+    Debug Error.Text
+    Debug "Key: " & Me.Key
 
 End
 
-Public Function OpenFromSettings() As SomeModel 'model As SomeModel
+Public Function OpenFromSettings() As Boolean 'As SomeModel 'model As SomeModel
 
-    Dim returnValue As SomeModel
+    Dim returnValue As Boolean = False 'As SomeModel
+    Dim readValue As Variant
 
     ' If IsNull(model) Then
     '     Error.Raise("OpenFromSettings: model is null")
@@ -92,22 +108,61 @@ Public Function OpenFromSettings() As SomeModel 'model As SomeModel
         Error.Raise("OpenFromSettings: model.Key is null")
     Endif
 
-    returnValue = New SomeModel
+    'TODO:need to clear values after failure, in case an error during opening leaves data in inconsistent state; see if caller can check/handle this
 
     'setting these will set Dirty property...
-    returnValue.Key = Me.Key
+    readValue = Settings[Me.Key & "/SomeString"]
+    If IsNull(readValue) Then
+        Error.Raise("Error opening key='" & Me.Key & "', SomeString=Null")
+    Else
+        Me.SomeString = readValue
+    Endif
 
-    returnValue.SomeString = Settings[Me.Key & "/SomeString"] 'TODO;test for non-existant key and other bad values
-    returnValue.SomeBoolean = Settings[Me.Key & "/SomeBoolean"]
-    returnValue.SomeInteger = Settings[Me.Key & "/SomeInteger"]
+    readValue = Settings[Me.Key & "/SomeBoolean"]
+    If IsNull(readValue) Then
+        Error.Raise("Error opening key='" & Me.Key & "', SomeBoolean=Null")
+    Else
+        Me.SomeBoolean = readValue
+    Endif
+
+    readValue = Settings[Me.Key & "/SomeInteger"]
+    If IsNull(readValue) Then
+        Error.Raise("Error opening key='" & Me.Key & "', SomeInteger=Null")
+    Else
+        Me.SomeInteger = readValue 'IIf(IsNull(Settings[Me.Key & "/SomeInteger"]), 0, Settings[Me.Key & "/SomeInteger"])
+    Endif
 
     '...so clear dirty flag after retrieving saved values
-    returnValue.Dirty = False
+    Me.Dirty = False
+
+    returnValue = True
 Finally
     Return returnValue
 Catch
     Debug Log.FormatError
     Debug Error.Text
     Debug "Key: " & Me.Key
+
+End
+
+Public Sub RefreshModel(Optional bPreserveDirty As Boolean = False)
+
+    Dim $bSaveDirty As Boolean
+
+    $bForceNotify = True
+
+    $bSaveDirty = Me.dirty
+    'setting these will set Dirty property...
+    Me.SomeString = Me.SomeString
+    Me.SomeBoolean = Me.SomeBoolean
+    Me.SomeInteger = Me.SomeInteger
+
+    '...so clear dirty flag after retrieving saved values
+    Me.Dirty = IIf(bPreserveDirty, $bSaveDirty, False)
+Finally
+    $bForceNotify = False
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
 
 End

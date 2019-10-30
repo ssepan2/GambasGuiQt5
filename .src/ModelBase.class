@@ -1,6 +1,24 @@
 ' Gambas class file
 
 Class ModelBase
+' #Region "INotifyPropertyChanged"
+Event PropertyChanged(propertyName As String) 'As Boolean
+
+Public Sub NotifyPropertyChanged(propertyName As String)
+
+    Dim bResult As Boolean = False
+
+    Debug "PropertyChanged fired: " & propertyName
+    bResult = Raise PropertyChanged(propertyName) 'As BResult
+    ' Debug bResult
+    If bResult Then
+        Debug "PropertyChanged cancelled: " & propertyName
+    Endif
+Catch
+    Debug Log.FormatError
+
+End 'Sub
+' #End Region
 
 '
 'Properties
@@ -19,6 +37,7 @@ Private Sub Key_Write(Value As String)
     If $sKey <> Value Then
         $sKey = Value
         Me.Dirty = True
+        NotifyPropertyChanged("Key")
     Endif
 
 End
@@ -35,6 +54,7 @@ End
 Private Sub Dirty_Write(Value As Boolean)
 
     $bDirty = Value
+    NotifyPropertyChanged("Dirty")
 
 End
 
