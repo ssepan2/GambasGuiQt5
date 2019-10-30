@@ -22,5 +22,8 @@ Public Function Main() As Integer
     Print "FMain: " & iResult
 
     Return iResult
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
 
 End

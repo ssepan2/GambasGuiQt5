@@ -16,6 +16,7 @@ Public Sub NotifyPropertyChanged(propertyName As String)
     Endif
 Catch
     Debug Log.FormatError
+    Debug Error.text
 
 End 'Sub
 ' #End Region

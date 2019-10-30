@@ -67,7 +67,6 @@ Public Sub Form_Open()
     FileNew
 
     Wait 1
-    'Finally
 Catch
     Debug Log.FormatError
     Debug Error.Text
@@ -80,6 +79,10 @@ Public Sub Form_Close()
     Settings["FMain/Left"] = Me.Left
     Settings["FMain/Height"] = Me.Height
     Settings["FMain/Width"] = Me.Width
+
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
 
 End
 
@@ -356,6 +359,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError 'TODO:get this dump into a log file
+    Debug Error.Text
 
     StopProgressBar("", Error.Text)
 
@@ -422,6 +426,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, Error.Text) 'Note:Finally fires before Catch
 
@@ -474,6 +479,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, Error.Text)
 
@@ -499,6 +505,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Print failed: '" & Error.Text & "'")
 
@@ -526,11 +533,9 @@ Public Sub FileExit()
 
     Me.Close
 
-    'lblStatusMessage.Text = ""
 Catch
-    'lblErrorMessage.Text = "blah" 'Log.FormatError
-
-    Debug lblErrorMessage.Text
+    Debug Log.FormatError
+    Debug Error.Text
 
 End 'Sub
 
@@ -562,6 +567,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Undo failed: '" & Error.Text & "'")
 
@@ -587,6 +593,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Redo failed: '" & Error.Text & "'")
 
@@ -612,6 +619,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Cut failed: '" & Error.Text & "'")
 
@@ -637,6 +645,7 @@ Finally
     StopProgressBar("Copied.")
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Copy failed: " & Error.Text & "")
 
@@ -662,6 +671,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Paste failed: '" & Error.Text & "'")
 
@@ -687,6 +697,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Delete failed: '" & Error.Text & "'")
 
@@ -712,6 +723,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Find failed: '" & Error.Text & "'")
 
@@ -737,6 +749,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Refresh failed: '" & Error.Text & "'")
 
@@ -762,6 +775,7 @@ Finally
     StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError
+    Debug Error.Text
 
     StopProgressBar(Null, "Preferences failed: '" & Error.Text & "'")
 
@@ -781,6 +795,7 @@ Finally
     StopProgressBar("About completed.")
 Catch 'ex As Exception
     Debug Log.FormatError 'Log.Write( Error , System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Debug Error.Text
 
     StopProgressBar(Null, Error.Text)
 
@@ -821,6 +836,8 @@ Public Sub StartProgressBarWithImage(sStatusMessage As String, sErrorMessage As 
     Wait
 Catch 'ex As Exception
     Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Debug Error.Text
+
     Error.Propagate 'Throw
 
 End 'Sub
@@ -860,6 +877,8 @@ Public Sub StartProgressBarWithPicture(sStatusMessage As String, sErrorMessage A
     Wait
 Catch 'ex As Exception
     Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Debug Error.Text
+
     Error.Propagate 'Throw
 
 End 'Sub
@@ -889,6 +908,8 @@ Public Sub UpdateProgressBar(sStatusMessage As String, iProgressBarValue As Inte
     Wait
 Catch 'ex As Exception
     Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Debug Error.Text
+
     Error.Propagate 'Throw
 
 End 'Sub
@@ -916,6 +937,8 @@ Public Sub UpdateStatusBarMessages(sStatusMessage As String, sErrorMessage As St
     Wait 'Application.DoEvents();
 Catch 'ex As Exception
     Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Debug Error.Text
+
     Error.Propagate 'Throw
 
 End 'Sub
@@ -955,6 +978,8 @@ Public Sub StopProgressBar(sStatusMessage As String, Optional sErrorMessage As S
     Wait 'Application.DoEvents();
 Catch 'ex As Exception
     Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
+    Debug Error.Text
+
     Error.Propagate 'Throw
 
 End 'Sub

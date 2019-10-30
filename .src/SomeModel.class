@@ -136,12 +136,13 @@ Public Function OpenFromSettings() As Boolean 'As SomeModel 'model As SomeModel
     Me.Dirty = False
 
     returnValue = True
-Finally
     Return returnValue
+Finally
 Catch
     Debug Log.FormatError
     Debug Error.Text
     Debug "Key: " & Me.Key
+    Return returnValue
 
 End
 
