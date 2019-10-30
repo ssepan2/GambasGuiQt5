@@ -35,13 +35,10 @@ Public Sub _model_PropertyChanged(propertyName As String)
         Case "Dirty"
             StatusDirtyIcon.Visible = _model.Dirty
             Debug propertyName & ": " & _model.Dirty
-            ' Case "XXX"
         Case Else
             Debug "unhandled event:" & propertyName
-            'Raise Error("unhandled event:" & propertyName)
     End Select
     Debug "PropertyChanged handled: " & propertyName
-    ' Stop Event
 Finally
     $bStopControlEvents = False
 Catch
@@ -121,7 +118,7 @@ End
 
 Public Sub MenuFileExit_Click()
 
-    FileExit   'CloseForm
+    FileExit
 
 End
 
@@ -277,7 +274,7 @@ End
 '
 Public Sub ButtonClose_Click()
 
-    FileExit   'CloseForm
+    FileExit
 
 End
 
@@ -311,46 +308,9 @@ Public Sub SomeBooleanCheckBox_Click()
 
 End
 
-' Public Sub CheckDirty()
-'
-'     StatusDirtyIcon.Visible = _model.Dirty
-'
-' End
-
-' Public Sub UpdateForm()
-'     'prevent control events from firing while being loaded from model
-'
-'     $bStopControlEvents = True
-'     SomeStringTextBox.text = _model.SomeString
-'     SomeIntegerValueBox.value = _model.SomeInteger
-'     SomeBooleanCheckBox.Value = _model.SomeBoolean
-' Finally
-'     $bStopControlEvents = False
-' Catch
-'     Debug Log.FormatError
-'     Debug Error.Text
-'
-' End
-
 '
 ' ViewModel
 '
-
-''' <summary>
-''' Call for any action that loads or creates settings (New, Open).
-''' </summary>
-' Public Sub RefreshModel()
-'
-'     'Wait
-'     'TODO:make model reload controls?
-'     'UpdateForm
-'     'CheckDirty
-'
-' Catch 'ex As Exception
-'     lblErrorMessage.Text = Log.FormatError
-'     Debug lblErrorMessage.Text
-'
-' End 'Sub
 
 Public Sub FileNew()
 
@@ -448,7 +408,7 @@ Public Sub FileOpen()
             'OPEN
             If _model.OpenFromSettings() Then
 
-                sStatusMessage = "Opened."
+                sStatusMessage = "Opened '" & response & "'."
             Else
                 'clear model on failure; NEW
                 _model = New SomeModel(Me, "_model")
@@ -502,7 +462,7 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
     Else
         'SAVE
         _model.SaveToSettings 'TODO:if saveas, read and if already present, prompt to replace
-        sStatusMessage = "Saved."
+        sStatusMessage = "Saved '" & _model.Key & "'."
     Endif
 
 Finally
@@ -830,31 +790,31 @@ End 'Sub
 ''' Use when Marquee-style progress bar is not sufficient, and percentages must be indicated.
 ''' WPF.
 ''' </summary>
-''' <param name="statusMessage"></param>
+''' <param name="sStatusMessage"></param>
 ''' <param name="errorMessage"></param>
 ''' <param name="objImage"></param>
 ''' <param name="isMarqueeProgressBarStyle"></param>
-''' <param name="progressBarValue"></param>
-Public Sub StartProgressBarWithImage(statusMessage__1 As String, errorMessage__2 As String, objImage As Image, isMarqueeProgressBarStyle As Boolean, progressBarValue__3 As Integer)
+''' <param name="iProgressBarValue"></param>
+Public Sub StartProgressBarWithImage(sStatusMessage As String, sErrorMessage As String, objImage As Image, isMarqueeProgressBarStyle As Boolean, iProgressBarValue As Integer)
 
     StatusProgressBar.Pulse = isMarqueeProgressBarStyle
     'set to blocks if actual percentage was used.
-    StatusProgressBar.Value = progressBarValue__3
+    StatusProgressBar.Value = iProgressBarValue
     'set to value if percentage used.
     'if Style is not Marquee, then we are marking either a count or percentage
-    If progressBarValue__3 > 1 Then 'StatusProgressBar.Maximum
+    If iProgressBarValue > 1 Then 'StatusProgressBar.Maximum
         'StatusProgressBar.Step = 1
         StatusProgressBar.Value = 1
     Endif
 
-    lblStatusMessage.Text = statusMessage__1
-    lblErrorMessage.Text = errorMessage__2
-    lblErrorMessage.ToolTip = errorMessage__2
+    lblStatusMessage.Text = sStatusMessage
+    lblErrorMessage.Text = sErrorMessage
+    lblErrorMessage.ToolTip = sErrorMessage
 
     StatusProgressBar.Visible = True
 
     StatusActionIcon.Image = objImage
-    StatusActionIcon.Tooltip = statusMessage__1
+    StatusActionIcon.Tooltip = sStatusMessage
     StatusActionIcon.Visible = True
     ' true;
     'give the app time to draw the eye-candy, even if its only for an instant
@@ -869,31 +829,31 @@ End 'Sub
 ''' Use when Marquee-style progress bar is not sufficient, and percentages must be indicated.
 ''' WinForms.
 ''' </summary>
-''' <param name="statusMessage"></param>
+''' <param name="sStatusMessage"></param>
 ''' <param name="errorMessage"></param>
 ''' <param name="objImage"></param>
 ''' <param name="isMarqueeProgressBarStyle"></param>
-''' <param name="progressBarValue"></param>
-Public Sub StartProgressBarWithPicture(statusMessage__1 As String, errorMessage__2 As String, objImage As Picture, isMarqueeProgressBarStyle As Boolean, progressBarValue__3 As Integer)
+''' <param name="iProgressBarValue"></param>
+Public Sub StartProgressBarWithPicture(sStatusMessage As String, sErrorMessage As String, objImage As Picture, isMarqueeProgressBarStyle As Boolean, iProgressBarValue As Integer)
 
     StatusProgressBar.Pulse = isMarqueeProgressBarStyle
     'set to blocks if actual percentage was used.
-    StatusProgressBar.Value = progressBarValue__3
+    StatusProgressBar.Value = iProgressBarValue
     'set to value if percentage used.
     'if Style is not Marquee, then we are marking either a count or percentage
-    If progressBarValue__3 > 1 Then 'StatusProgressBar.Maximum
+    If iProgressBarValue > 1 Then 'StatusProgressBar.Maximum
         'StatusProgressBar.Step = 1
         StatusProgressBar.Value = 1
     Endif
 
-    lblStatusMessage.Text = statusMessage__1
-    lblErrorMessage.Text = errorMessage__2
-    lblErrorMessage.ToolTip = errorMessage__2
+    lblStatusMessage.Text = sStatusMessage
+    lblErrorMessage.Text = sErrorMessage
+    lblErrorMessage.ToolTip = sErrorMessage
 
     StatusProgressBar.Visible = True
 
     StatusActionIcon.Picture = objImage
-    StatusActionIcon.Tooltip = statusMessage__1
+    StatusActionIcon.Tooltip = sStatusMessage
     StatusActionIcon.Visible = True
 
     'give the app time to draw the eye-candy, even if its only for an instant
@@ -907,23 +867,23 @@ End 'Sub
 ''' <summary>
 ''' Update percentage changes.
 ''' </summary>
-''' <param name="statusMessage"></param>
-''' <param name="progressBarValue"></param>
-Public Sub UpdateProgressBar(statusMessage__1 As String, progressBarValue__2 As Integer)
+''' <param name="sStatusMessage"></param>
+''' <param name="iProgressBarValue"></param>
+Public Sub UpdateProgressBar(sStatusMessage As String, iProgressBarValue As Integer)
     'Try
 
-    If Not IsNull(statusMessage__1) Then
-        lblStatusMessage.Text = statusMessage__1
+    If Not IsNull(sStatusMessage) Then
+        lblStatusMessage.Text = sStatusMessage
     Endif
 
     'if Style is not Marquee, then we are marking either a count or percentage
     'if we are simply counting, the progress bar will periodically need to adjust the Maximum.
-    If progressBarValue__2 > 1 Then 'StatusProgressBar.Maximum
+    If iProgressBarValue > 1 Then 'StatusProgressBar.Maximum
         'StatusProgressBar.Maximum = StatusProgressBar.Maximum * 2
         StatusProgressBar.Value = StatusProgressBar.Value / 2
     Endif
 
-    StatusProgressBar.Value = progressBarValue__2
+    StatusProgressBar.Value = iProgressBarValue
 
     'give the app time to draw the eye-candy, even if its only for an instant
     Wait
@@ -940,16 +900,16 @@ End 'Sub
 ''' Optional doEvents flag will determine if
 ''' messages are processed before continuing.
 ''' </summary>
-''' <param name="statusMessage"></param>
+''' <param name="sStatusMessage"></param>
 ''' <param name="errorMessage"></param>
-Public Sub UpdateStatusBarMessages(statusMessage__1 As String, errorMessage__2 As String)
+Public Sub UpdateStatusBarMessages(sStatusMessage As String, sErrorMessage As String)
 
-    If Not IsNull(statusMessage__1) Then
-        lblStatusMessage.Text = statusMessage__1
+    If Not IsNull(sStatusMessage) Then
+        lblStatusMessage.Text = sStatusMessage
     Endif
-    If Not IsNull(errorMessage__2) Then
-        lblErrorMessage.Text = errorMessage__2
-        lblErrorMessage.ToolTip = errorMessage__2
+    If Not IsNull(sErrorMessage) Then
+        lblErrorMessage.Text = sErrorMessage
+        lblErrorMessage.ToolTip = sErrorMessage
     Endif
 
     'give the app time to draw the eye-candy, even if its only for an instant
@@ -964,15 +924,15 @@ End 'Sub
 ''' Stop progress bar and display messages.
 ''' DoEvents will ensure messages are processed before continuing.
 ''' </summary>
-''' <param name="statusMessage"></param>
-''' <param name="errorMessage">Null parameter will leave a message unchanged; "" will clear it.</param>
-Public Sub StopProgressBar(statusMessage__1 As String, Optional errorMessage__2 As String = Null)
+''' <param name="sStatusMessage"></param>
+''' <param name="sErrorMessage">Null parameter will leave a message unchanged; "" will clear it.</param>
+Public Sub StopProgressBar(sStatusMessage As String, Optional sErrorMessage As String = Null)
 
-    lblStatusMessage.Text = statusMessage__1
+    lblStatusMessage.Text = sStatusMessage
     'do not clear error at end of operation, clear it at start of operation
-    If errorMessage__2 <> Null Then
+    If sErrorMessage <> Null Then
         'this.StatusBarErrorMessage.ToolTipText = errorMessage;
-        lblErrorMessage.Text = errorMessage__2
+        lblErrorMessage.Text = sErrorMessage
     Endif
 
     StatusProgressBar.Pulse = False
