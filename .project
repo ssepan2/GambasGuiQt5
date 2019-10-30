@@ -1,7 +1,7 @@
 # Gambas Project File 3.0
 Title=Gambas Gui Qt5
 Startup=Main
-Version=0.0.9
+Version=0.0.10
 Component=gb.args
 Component=gb.image
 Component=gb.gui.qt

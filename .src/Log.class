@@ -12,5 +12,9 @@ Public Function FormatError() As String
         sResult &= sLine & gb.CrLf
     Next
     Return sResult
+Catch 'ex As Exception
+    Debug Log.FormatError() 'Error.Text 'TODO:get this dump into a log file
+    Debug Error.Text
+    Return ""
 
 End

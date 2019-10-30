@@ -8,9 +8,10 @@ Public Function FormatAbout() As String
     Dim sResult As String = Null
 
     sResult &= Application.Name & gb.CrLf & Application.Title & gb.CrLf & Application.Version & gb.CrLf & Application.Id & gb.CrLf & Application.Path
-Finally
     Return sResult
 Catch 'ex As Exception
     Debug Log.FormatError() 'Error.Text 'TODO:get this dump into a log file
+    Debug Error.Text
+    Return ""
 
 End
