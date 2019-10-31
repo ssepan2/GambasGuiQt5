@@ -7,9 +7,9 @@ Public Function FormatError() As String
 
     Dim sResult As String = Null
 
-    sResult &= "Error: " & Error.Text & gb.CrLf & "Line: " & Error.Where & gb.CrLf & "Trace: " & gb.CrLf
+    sResult &= Subst("Error: &1\r\nLine: &2\r\nTrace: \r\n", Error.Text, Error.Where)
     For Each sLine As String In Error.Backtrace
-        sResult &= sLine & gb.CrLf
+        sResult &= Subst("&1\r\n", sLine)
     Next
     Return sResult
 Catch 'ex As Exception

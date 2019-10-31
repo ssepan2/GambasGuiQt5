@@ -14,12 +14,14 @@ Public Function Main() As Integer
         Print "f param used"
     Endif
 
+    '
+
     Print "Starting FMain..."
 
     frmMainForm = New FMain(Null)
     iResult = frmMainForm.ShowModal()
 
-    Print "FMain: " & iResult
+    Print Subst("FMain: &1", iResult)
 
     Return iResult
 Catch
