@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Create Private
 Class ModelBase
 ' #Region "INotifyPropertyChanged"
 Event PropertyChanged(propertyName As String) 'As Boolean

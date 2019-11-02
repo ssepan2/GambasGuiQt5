@@ -5,10 +5,10 @@ Const MENUBAR_HEIGHT As Integer = 22
 
 Private $objModel As SomeModel = Null
 Private $bStopControlEvents As Boolean = False
-Private $objStatusBarDock As DockAnchor
-Private $objHBoxFormButtonsAnchor As DockAnchor
-Private $objToolBarActionsDock As DockAnchor
-Private $objPanelTestDockOrAnchor As DockAnchor
+Private $objStatusBarDock As Dock
+Private $objHBoxFormButtonsAnchor As Anchor
+Private $objToolBarActionsDock As Dock
+Private $objPanelTestAnchor As Anchor
 ' #End Region
 
 ' #Region "Constructors"
@@ -65,11 +65,11 @@ End
 
 Public Sub Form_Open()
 
-    $objToolBarActionsDock = New DockAnchor(ToolBarActions, Me, True, DockAnchor.DockTop, DockAnchor.AnchorNone)
-    $objStatusBarDock = New DockAnchor(PanelStatusBar, Me, True, DockAnchor.DockBottom, DockAnchor.AnchorNone)
+    $objToolBarActionsDock = New Dock(ToolBarActions, Me, True, Dock.DockTop)
+    $objStatusBarDock = New Dock(PanelStatusBar, Me, True, Dock.DockBottom)
 
-    $objHBoxFormButtonsAnchor = New DockAnchor(HBoxFormButtons, Me, True, DockAnchor.DockNone, DockAnchor.AnchorLeft + DockAnchor.AnchorBottom + DockAnchor.AnchorRight)
-    $objPanelTestDockOrAnchor = New DockAnchor(PanelTest, Me, True, DockAnchor.DockNone, DockAnchor.AnchorLeft + DockAnchor.AnchorRight + DockAnchor.AnchorTop + DockAnchor.AnchorBottom)
+    $objHBoxFormButtonsAnchor = New Anchor(HBoxFormButtons, Me, True, Anchor.AnchorLeft + Anchor.AnchorBottom + Anchor.AnchorRight)
+    $objPanelTestAnchor = New Anchor(PanelTest, Me, True, Anchor.AnchorLeft + Anchor.AnchorRight + Anchor.AnchorTop + Anchor.AnchorBottom)
 
     Me.Top = Settings["FMain/Top", Me.Top]
     Me.Left = Settings["FMain/Left", Me.Left]
@@ -93,8 +93,8 @@ Public Sub Form_Close()
     Settings["FMain/Width"] = Me.Width
 
     $objHBoxFormButtonsAnchor = Null
+    $objPanelTestAnchor = Null
 
-    $objPanelTestDockOrAnchor = Null
     $objStatusBarDock = Null
     $objToolBarActionsDock = Null
 Catch
@@ -105,18 +105,10 @@ End
 
 Public Sub Form_Resize()
 
-    Dim iWorkingClientWidth As Integer = 0
-
-    iWorkingClientWidth = Me.Width - (2 * Me.Padding)
-
-    ' Note: account for menu height in status bar Y
     $objToolBarActionsDock.Apply
-
     $objStatusBarDock.Apply
 
-    $objPanelTestDockOrAnchor.Apply
-
-    ' HBoxFormButtons.Move(Me.Padding, PanelStatusBar.Y - Me.Padding - HBoxFormButtons.Height, iWorkingClientWidth, HBoxFormButtons.Height)
+    $objPanelTestAnchor.Apply
     $objHBoxFormButtonsAnchor.Apply
 
 End
