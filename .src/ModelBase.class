@@ -8,11 +8,11 @@ Public Sub NotifyPropertyChanged(propertyName As String)
 
     Dim bResult As Boolean = False
 
-    Debug "PropertyChanged fired: " & propertyName
+    ' Debug "PropertyChanged fired: " & propertyName
     bResult = Raise PropertyChanged(propertyName) 'As BResult
     ' Debug bResult
     If bResult Then
-        Debug "PropertyChanged cancelled: " & propertyName
+        ' Debug "PropertyChanged cancelled: " & propertyName
     Endif
 Catch
     Debug Log.FormatError

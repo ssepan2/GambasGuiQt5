@@ -1,0 +1,202 @@
+' Gambas class file
+
+'Constants
+'
+Public Const MENUBAR_HEIGHT As Integer = 22
+
+'Enums
+'
+Public Enum DockNone = 0, DockTop = 1, DockRight = 2, DockBottom = 3, DockLeft = 4
+Public Enum AnchorNone = 0, AnchorTop = 1, AnchorRight = 2, AnchorBottom = 4, AnchorLeft = 8
+
+'Fields
+'
+
+'save reference to control,form
+Private $frmForm As Form
+Private $ctlControl As Control
+
+Private $bUsingMenubar As Boolean
+
+'TODO:make (read-only) properties of dock, anchor, initial, new?
+'dock is integer enum
+Private $iDock As Integer = DockNone
+'anchor is integer mask of enums
+Private $iAnchor As Integer = DockNone
+
+' Need to know initial design in order to enforce Anchor at runtime
+'Not  valid until after ctor(): _new()
+Private $iControlDesignerX As Integer = 0
+Private $iControlDesignerY As Integer = 0
+Private $iControlDesignerWidth As Integer = 0
+Private $iControlDesignerHeight As Integer = 0
+
+' Private $iFormDesignerX As Integer = 0
+' Private $iFormDesignerY As Integer = 0
+Private $iFormDesignerWidth As Integer = 0
+Private $iFormDesignerHeight As Integer = 0
+
+'Should show design after Resize
+'Not valid until after each Apply().
+Private $iControlNewX As Integer = $iControlDesignerX
+Private $iControlNewY As Integer = $iControlDesignerY
+Private $iControlNewWidth As Integer = $iControlDesignerWidth
+Private $iControlNewHeight As Integer = $iControlDesignerHeight
+
+' Private $iFormNewX As Integer = $iFormDesignerX
+' Private $iFormNewY As Integer = $iFormDesignerY
+' Private $iFormNewWidth As Integer = $iFormDesignerWidth
+' Private $iFormNewHeight As Integer = $iFormDesignerHeight
+
+Public Sub _new(controlParam As Control, formParam As Form, usingMenubarParam As Boolean, iDockParam As Integer, iAnchorMaskParam As Integer)
+    'Note: not doing this ByRef, but pointers seem to be working to change passed controls.
+
+    'only used to validate options
+    Dim aiDockEnums As New Integer[]
+    Dim aiAnchorEnums As New Integer[]
+
+    $ctlControl = controlParam
+    $frmForm = formParam
+    $bUsingMenubar = usingMenubarParam
+
+    'Note; must call New before form resizes in order to capture initial design
+    $iControlDesignerX = $ctlControl.X
+    $iControlDesignerY = $ctlControl.Y
+    $iControlDesignerWidth = $ctlControl.Width
+    $iControlDesignerHeight = $ctlControl.Height
+
+    ' $iFormDesignerX = $frmForm.X
+    ' $iFormDesignerY = $frmForm.Y 'Don't care about these 1st two
+    $iFormDesignerWidth = formParam.Width 'Need these last two
+    $iFormDesignerHeight = $frmForm.Height
+
+    $iDock = iDockParam
+    $iAnchor = iAnchorMaskParam
+
+    'validate combinations
+    If ($iAnchor > (AnchorTop + AnchorRight + AnchorBottom + AnchorLeft)) Or ($iAnchor < 0) Then
+        Error.Raise(Subst("invalid Anchor mask: &1", $iAnchor))
+    Endif
+    ' aiAnchorEnums = [AnchorNone, AnchorTop, AnchorRight, AnchorBottom, AnchorLeft]
+    ' If (Not aiAnchorEnums.Exist($iAnchor)) Then
+    '     Error.Raise(Subst("invalid Anchor enum: &1", $iAnchor))
+    ' Endif
+    aiDockEnums = [DockNone, DockTop, DockRight, DockBottom, DockLeft]
+    If (Not aiDockEnums.Exist($iDock)) Then
+        Error.Raise(Subst("invalid Dock enum: &1", $iDock))
+    Endif
+    If $iDock = DockNone And $iAnchor = AnchorNone Then
+        Error.Raise(Subst("invalid option; neither Dock nor Anchor specified: d:&1, a:&2", $iDock, $iAnchor))
+    Endif
+    If $iDock <> DockNone And $iAnchor <> AnchorNone Then
+        Error.Raise(Subst("invalid option; both Dock and Anchor specified: d:&1, a:&2", $iDock, $iAnchor))
+    Endif
+
+    Debug Subst("c:&1,x:&2,y:&3,W:&4,h:&5,d:&6,a:&7", $ctlControl.Name, $iControlDesignerX, $iControlDesignerY, $iControlDesignerWidth, $iControlDesignerHeight, $iDock, $iAnchor)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+End
+
+Public Sub Apply()
+    'TODO:allow a 2nd control param to indicate current control is going to dock next to it; 2nd will have to be called after 1st and should be passed reference to first
+    ' Note:must call in form resize, after any changes to form size
+    ' Note:each anchor and dock is unaware of other, so ones sharing the same corner may overlap
+
+    Dim iWorkingClientWidth As Integer = 0
+    Dim iWorkingClientHeight As Integer = 0
+    Dim iFormNetChangeWidth As Integer = 0
+    Dim iFormNetChangeHeight As Integer = 0
+
+    $iControlNewX = $iControlDesignerX
+    $iControlNewY = $iControlDesignerY
+    $iControlNewWidth = $iControlDesignerWidth
+    $iControlNewHeight = $iControlDesignerHeight
+
+    'Try to use passed form reference
+    ' $iFormNewX = $frmForm.X
+    ' $iFormNewY = $frmForm.Y 'Don't care about these 1st two
+    ' $iFormNewWidth = $frmForm.Width 'Need these last two
+    ' $iFormNewHeight = $frmForm.Height
+    'Debug Subst("f:w=&1,h=&2", $iFormNewWidth, $iFormNewHeight)
+
+    'Note:use Max() when subtracting anything applied directly to a property
+    iWorkingClientWidth = Max($frmForm.Width - (2 * $frmForm.Padding), 0)
+    iWorkingClientHeight = Max($frmForm.Height - IIf($bUsingMenubar, MENUBAR_HEIGHT, 0) - (2 * $frmForm.Padding), 0)
+
+    iFormNetChangeWidth = $frmForm.Width - $iFormDesignerWidth
+    iFormNetChangeHeight = $frmForm.Height - $iFormDesignerHeight
+    Debug Subst("f:dW=&1,dH=&2", iFormNetChangeWidth, iFormNetChangeHeight)
+
+    'dock
+    If $iDock <> DockNone Then
+        Select $iDock
+            Case DockTop
+                $iControlNewX = $frmForm.Padding
+                $iControlNewY = $frmForm.Padding 'TODO:change this to stack multiple (replace w/ $frmForm.Padding+CtlXxx.Y+ctlXxx.Height)
+                $iControlNewWidth = iWorkingClientWidth
+                $iControlNewHeight = $ctlControl.Height
+            Case DockRight
+                $iControlNewX = Max($frmForm.Width - $ctlControl.Width - $frmForm.Padding, $frmForm.Padding) 'TODO:change this to stack multiple (replace $frmForm.Width with ctlXxx.X)
+                $iControlNewY = $frmForm.Padding
+                $iControlNewWidth = $ctlControl.Width
+                $iControlNewHeight = iWorkingClientHeight
+            Case DockBottom
+                $iControlNewX = $frmForm.Padding
+                $iControlNewY = Max($frmForm.Height - $ctlControl.Height - $frmForm.Padding - IIf($bUsingMenubar, MENUBAR_HEIGHT, 0), $frmForm.Padding) 'TODO:change this to stack multiple (replace $frmForm.Height with ctlXxx.Y)
+                $iControlNewWidth = iWorkingClientWidth
+                $iControlNewHeight = $ctlControl.Height
+            Case DockLeft
+                $iControlNewX = $frmForm.Padding 'TODO:change this to stack multiple (replace w/ $frmForm.Padding+CtlXxx.X+ctlXxx.Width)
+                $iControlNewY = $frmForm.Padding
+                $iControlNewWidth = $ctlControl.Width
+                $iControlNewHeight = iWorkingClientHeight
+            Case Else
+                Error.Raise(Subst("invalid Dock enum: &1", $iDock))
+        End Select
+        $ctlControl.Move($iControlNewX, $iControlNewY, $iControlNewWidth, $iControlNewHeight)
+    Endif
+
+    'as a result of validation in ctor(), these two If statements (/|\, \|/) will be mutually exclusive
+    'TODO:consider making two subclasses (Dock, Anchor)  of a base class (DockAnchorBase)
+
+    'anchor
+    If $iAnchor <> AnchorNone Then
+        'FIRST need to work out each side INDIVIDUALLY (or with OPPOSITE), and THEN perform move
+        If (($iAnchor And AnchorTop) > 0) And (($iAnchor And AnchorBottom) > 0) Then
+            'Top and Bottom
+            $iControlNewY = $iControlDesignerY
+            $iControlNewHeight = Max($iControlDesignerHeight + iFormNetChangeHeight, $iControlDesignerHeight) 'design height will be treated as a minumum
+        Else
+            If ($iAnchor And AnchorTop) > 0 Then
+                'Top, not Bottom
+                $iControlNewY = $iControlDesignerY 'Note: This will have no visible effect
+            Endif
+            If ($iAnchor And AnchorBottom) > 0 Then
+                'Bottom, not Top
+                $iControlNewY = Max($iControlDesignerY + iFormNetChangeHeight, $frmForm.Padding)
+            Endif
+        Endif
+        If (($iAnchor And AnchorLeft) > 0) And (($iAnchor And AnchorRight) > 0) Then
+            'Left and Right
+            $iControlNewX = $iControlDesignerX
+            $iControlNewWidth = Max($iControlDesignerWidth + iFormNetChangeWidth, $iControlDesignerWidth) 'design width will be treated as a minumum
+        Else
+            If ($iAnchor And AnchorLeft) > 0 Then
+                'Left, not Right
+                $iControlNewX = $iControlDesignerX 'Note: This will have no visible effect
+            Endif
+            If ($iAnchor And AnchorRight) > 0 Then
+                'Right, not Left
+                $iControlNewX = Max($iControlDesignerX + iFormNetChangeWidth, $frmForm.Padding)
+            Endif
+        Endif
+        $ctlControl.Move($iControlNewX, $iControlNewY, $iControlNewWidth, $iControlNewHeight)
+    Endif
+
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+End

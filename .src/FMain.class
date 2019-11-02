@@ -1,8 +1,14 @@
 ' Gambas class file
 
 ' #Region "Declarations"
+Const MENUBAR_HEIGHT As Integer = 22
+
 Private $objModel As SomeModel = Null
 Private $bStopControlEvents As Boolean = False
+Private $objStatusBarDock As DockAnchor
+Private $objHBoxFormButtonsAnchor As DockAnchor
+Private $objToolBarActionsDock As DockAnchor
+Private $objPanelTestDockOrAnchor As DockAnchor
 ' #End Region
 
 ' #Region "Constructors"
@@ -25,20 +31,20 @@ Public Sub $objModel_PropertyChanged(propertyName As String)
     Select propertyName
         Case "SomeString"
             SomeStringTextBox.text = $objModel.SomeString
-            Debug Subst("&1: &2", propertyName, $objModel.SomeString)
+            ' Debug Subst("&1: &2", propertyName, $objModel.SomeString)
         Case "SomeInteger"
             SomeIntegerValueBox.value = $objModel.SomeInteger
-            Debug Subst("&1: &2", propertyName, $objModel.SomeInteger)
+            ' Debug Subst("&1: &2", propertyName, $objModel.SomeInteger)
         Case "SomeBoolean"
             SomeBooleanCheckBox.Value = $objModel.SomeBoolean
-            Debug Subst("&1: &2", propertyName, $objModel.SomeBoolean)
+            ' Debug Subst("&1: &2", propertyName, $objModel.SomeBoolean)
         Case "Dirty"
             StatusDirtyIcon.Visible = $objModel.Dirty
-            Debug Subst("&1: &2", propertyName, $objModel.Dirty)
+            ' Debug Subst("&1: &2", propertyName, $objModel.Dirty)
         Case Else
             Debug "unhandled event:" & propertyName
     End Select
-    Debug Subst("PropertyChanged handled: &1", propertyName)
+    ' Debug Subst("PropertyChanged handled: &1", propertyName)
 Finally
     $bStopControlEvents = False
 Catch
@@ -58,6 +64,12 @@ End
 '
 
 Public Sub Form_Open()
+
+    $objToolBarActionsDock = New DockAnchor(ToolBarActions, Me, True, DockAnchor.DockTop, DockAnchor.AnchorNone)
+    $objStatusBarDock = New DockAnchor(PanelStatusBar, Me, True, DockAnchor.DockBottom, DockAnchor.AnchorNone)
+
+    $objHBoxFormButtonsAnchor = New DockAnchor(HBoxFormButtons, Me, True, DockAnchor.DockNone, DockAnchor.AnchorLeft + DockAnchor.AnchorBottom + DockAnchor.AnchorRight)
+    $objPanelTestDockOrAnchor = New DockAnchor(PanelTest, Me, True, DockAnchor.DockNone, DockAnchor.AnchorLeft + DockAnchor.AnchorRight + DockAnchor.AnchorTop + DockAnchor.AnchorBottom)
 
     Me.Top = Settings["FMain/Top", Me.Top]
     Me.Left = Settings["FMain/Left", Me.Left]
@@ -80,9 +92,32 @@ Public Sub Form_Close()
     Settings["FMain/Height"] = Me.Height
     Settings["FMain/Width"] = Me.Width
 
+    $objHBoxFormButtonsAnchor = Null
+
+    $objPanelTestDockOrAnchor = Null
+    $objStatusBarDock = Null
+    $objToolBarActionsDock = Null
 Catch
     Debug Log.FormatError
     Debug Error.Text
+
+End
+
+Public Sub Form_Resize()
+
+    Dim iWorkingClientWidth As Integer = 0
+
+    iWorkingClientWidth = Me.Width - (2 * Me.Padding)
+
+    ' Note: account for menu height in status bar Y
+    $objToolBarActionsDock.Apply
+
+    $objStatusBarDock.Apply
+
+    $objPanelTestDockOrAnchor.Apply
+
+    ' HBoxFormButtons.Move(Me.Padding, PanelStatusBar.Y - Me.Padding - HBoxFormButtons.Height, iWorkingClientWidth, HBoxFormButtons.Height)
+    $objHBoxFormButtonsAnchor.Apply
 
 End
 
