@@ -44,3 +44,33 @@ Public $iControlNewX As Integer = $iControlDesignerX
 Public $iControlNewY As Integer = $iControlDesignerY
 Public $iControlNewWidth As Integer = $iControlDesignerWidth
 Public $iControlNewHeight As Integer = $iControlDesignerHeight
+
+'ctor()
+'
+Public Sub _new(controlParam As Control, formParam As Form, usingMenubarParam As Boolean)
+    'Note: not doing this ByRef, but pointers seem to be working to change passed controls.
+
+    'only used to validate options
+    'Dim aiAnchorEnums As New Integer[]
+
+    Me.$ctlControl = controlParam
+    Me.$frmForm = formParam
+    Me.$bUsingMenubar = usingMenubarParam
+
+    'Note; must call New before form resizes in order to capture initial design
+    Me.$iControlDesignerX = Me.$ctlControl.X
+    Me.$iControlDesignerY = Me.$ctlControl.Y
+    Me.$iControlDesignerWidth = Me.$ctlControl.Width
+    Me.$iControlDesignerHeight = Me.$ctlControl.Height
+
+    ' Me.$iFormDesignerX = Me.$frmForm.X
+    ' Me.$iFormDesignerY = Me.$frmForm.Y 'Don't care about these 1st two
+    Me.$iFormDesignerWidth = formParam.Width 'Need these last two
+    Me.$iFormDesignerHeight = Me.$frmForm.Height
+
+    ' Debug Subst("c:&1,x:&2,y:&3,W:&4,h:&5", Me.$ctlControl.Name, Me.$iControlDesignerX, Me.$iControlDesignerY, Me.$iControlDesignerWidth, Me.$iControlDesignerHeight)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+End

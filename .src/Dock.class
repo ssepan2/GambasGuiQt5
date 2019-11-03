@@ -10,26 +10,29 @@ Class Dock Inherits DockAnchorBase
 'Fields
 '
 
-Public Sub _new(controlParam As Control, formParam As Form, usingMenubarParam As Boolean, iDockParam As Integer)
+'ctor()
+'
+'Public Sub _new(controlParam As Control, formParam As Form, usingMenubarParam As Boolean, iDockParam As Integer)
+Public Sub _new(iDockParam As Integer)
     'Note: not doing this ByRef, but pointers seem to be working to change passed controls.
 
     'only used to validate options
     Dim aiDockEnums As New Integer[]
 
-    Super.$ctlControl = controlParam
-    Super.$frmForm = formParam
-    Super.$bUsingMenubar = usingMenubarParam
-
-    'Note; must call New before form resizes in order to capture initial design
-    Super.$iControlDesignerX = Super.$ctlControl.X
-    Super.$iControlDesignerY = Super.$ctlControl.Y
-    Super.$iControlDesignerWidth = Super.$ctlControl.Width
-    Super.$iControlDesignerHeight = Super.$ctlControl.Height
-
-    ' Super.$iFormDesignerX = Super.$frmForm.X
-    ' Super.$iFormDesignerY = Super.$frmForm.Y 'Don't care about these 1st two
-    Super.$iFormDesignerWidth = formParam.Width 'Need these last two
-    Super.$iFormDesignerHeight = Super.$frmForm.Height
+    ' Super.$ctlControl = controlParam
+    ' Super.$frmForm = formParam
+    ' Super.$bUsingMenubar = usingMenubarParam
+    '
+    ' 'Note; must call New before form resizes in order to capture initial design
+    ' Super.$iControlDesignerX = Super.$ctlControl.X
+    ' Super.$iControlDesignerY = Super.$ctlControl.Y
+    ' Super.$iControlDesignerWidth = Super.$ctlControl.Width
+    ' Super.$iControlDesignerHeight = Super.$ctlControl.Height
+    '
+    ' ' Super.$iFormDesignerX = Super.$frmForm.X
+    ' ' Super.$iFormDesignerY = Super.$frmForm.Y 'Don't care about these 1st two
+    ' Super.$iFormDesignerWidth = formParam.Width 'Need these last two
+    ' Super.$iFormDesignerHeight = Super.$frmForm.Height
 
     Super.$iDock = iDockParam
 
