@@ -1,8 +1,6 @@
 ' Gambas class file
 
 ' #Region "Declarations"
-Const MENUBAR_HEIGHT As Integer = 22
-
 Private $objModel As SomeModel = Null
 Private $bStopControlEvents As Boolean = False
 Private $objStatusBarDock As Dock
@@ -104,6 +102,13 @@ Catch
 End
 
 Public Sub Form_Resize()
+
+    If Me.Width < 800 Then
+        Me.Width = $objToolBarActionsDock.$iFormDesignerWidth
+    Endif
+    If Me.Height < 600 Then
+        Me.Height = $objToolBarActionsDock.$iFormDesignerHeight
+    Endif
 
     $objToolBarActionsDock.Apply
     $objStatusBarDock.Apply
