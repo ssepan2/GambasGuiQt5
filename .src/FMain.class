@@ -3,10 +3,16 @@
 ' #Region "Declarations"
 Private $objModel As SomeModel = Null
 Private $bStopControlEvents As Boolean = False
-Private $objStatusBarDock As Dock
-Private $objHBoxFormButtonsAnchor As Anchor
+
 Private $objToolBarActionsDock As Dock
+Private $objStatusBarDock As Dock
+Private $objPanelBottomDock As Dock
+Private $objPanelRightSideDock As Dock
+Private $objPanelLeftSideDock As Dock
+Private $objPanelTopDock As Dock
+
 Private $objPanelTestAnchor As Anchor
+Private $objHBoxFormButtonsAnchor As Anchor
 ' #End Region
 
 ' #Region "Constructors"
@@ -65,6 +71,11 @@ Public Sub Form_Open()
 
     $objToolBarActionsDock = New Dock(ToolBarActions, Me, True, Dock.DockTop)
     $objStatusBarDock = New Dock(PanelStatusBar, Me, True, Dock.DockBottom)
+    'additional panels used and docked for no reason except to demonstrate enhanced docking capability (v0.2)
+    $objPanelBottomDock = New Dock(PanelBottom, Me, True, Dock.DockBottom)
+    $objPanelRightSideDock = New Dock(PanelRightSide, Me, True, Dock.DockRight)
+    $objPanelLeftSideDock = New Dock(PanelLeftSide, Me, True, Dock.DockLeft)
+    $objPanelTopDock = New Dock(PanelTop, Me, True, Dock.DockTop)
 
     $objHBoxFormButtonsAnchor = New Anchor(HBoxFormButtons, Me, True, Anchor.AnchorLeft + Anchor.AnchorBottom + Anchor.AnchorRight)
     $objPanelTestAnchor = New Anchor(PanelTest, Me, True, Anchor.AnchorLeft + Anchor.AnchorRight + Anchor.AnchorTop + Anchor.AnchorBottom)
@@ -93,6 +104,10 @@ Public Sub Form_Close()
     $objHBoxFormButtonsAnchor = Null
     $objPanelTestAnchor = Null
 
+    $objPanelTopDock = Null
+    $objPanelLeftSideDock = Null
+    $objPanelRightSideDock = Null
+    $objPanelBottomDock = Null
     $objStatusBarDock = Null
     $objToolBarActionsDock = Null
 Catch
@@ -112,6 +127,10 @@ Public Sub Form_Resize()
 
     $objToolBarActionsDock.Apply
     $objStatusBarDock.Apply
+    $objPanelBottomDock.Apply
+    $objPanelRightSideDock.Apply
+    $objPanelLeftSideDock.Apply
+    $objPanelTopDock.Apply
 
     $objPanelTestAnchor.Apply
     $objHBoxFormButtonsAnchor.Apply
