@@ -238,18 +238,6 @@
       MoveScaled(14,10,4,4)
     }
   }
-  { HBoxFormButtons HBox
-    MoveScaled(10,61,96,4)
-    Expand = True
-    AutoResize = True
-    { Spring1 Spring
-      MoveScaled(10,1,4,3)
-    }
-    { ButtonClose Button
-      MoveScaled(44,0,16,4)
-      Text = ("Close")
-    }
-  }
   { PanelStatusBar Panel
     MoveScaled(1,75,112,6)
     Expand = True
@@ -271,9 +259,6 @@
     { lblErrorMessage Label
       MoveScaled(1,3,80,3)
       Foreground = Color.Red
-    }
-    { Spring2 Spring
-      MoveScaled(82,0,4,4)
     }
     { StatusDirtyIcon PictureBox
       MoveScaled(108,1,3.1429,3.1429)
@@ -302,6 +287,15 @@
   { PanelTop Panel
     MoveScaled(6,4,102,5)
     Border = Border.Raised
+  }
+  { PanelFormButtons Panel
+    MoveScaled(10,61,96,4)
+    Expand = True
+    AutoResize = True
+    { ButtonClose Button
+      MoveScaled(80,0,16,4)
+      Text = ("Close")
+    }
   }
 }
 

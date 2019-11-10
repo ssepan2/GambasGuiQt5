@@ -4,6 +4,7 @@
 Private $objModel As SomeModel = Null
 Private $bStopControlEvents As Boolean = False
 
+'Form
 Private $objToolBarActionsDock As Dock
 Private $objStatusBarDock As Dock
 Private $objPanelBottomDock As Dock
@@ -12,7 +13,17 @@ Private $objPanelLeftSideDock As Dock
 Private $objPanelTopDock As Dock
 
 Private $objPanelTestAnchor As Anchor
-Private $objHBoxFormButtonsAnchor As Anchor
+Private $objPanelFormButtonsAnchor As Anchor
+
+'PanelFormButtons
+Private $objPanelFormButtonsButtonClose As Dock
+
+'PanelStatusBar
+Private $objPanelStatusBarStatusMessage As Anchor
+Private $objPanelStatusBarErrorMessage As Anchor
+Private $objPanelStatusBarStatusProgressBar As Anchor
+Private $objPanelStatusBarStatusActionIcon As Anchor
+Private $objPanelStatusBarStatusDirtyIcon As Anchor
 ' #End Region
 
 ' #Region "Constructors"
@@ -69,16 +80,28 @@ End
 
 Public Sub Form_Open()
 
-    $objToolBarActionsDock = New Dock(ToolBarActions, Me, True, Dock.DockTop)
-    $objStatusBarDock = New Dock(PanelStatusBar, Me, True, Dock.DockBottom)
+    'Note: the order instantiated defines an order of precedence for Docks as they examine adjacent Docks to handle stacking and shared corners. Instantiated items are added to an internal list maintained by DockAnchor.
+    'Form
+    $objToolBarActionsDock = New Dock(ToolBarActions, True, Dock.DockTop)
+    $objStatusBarDock = New Dock(PanelStatusBar, True, Dock.DockBottom)
     'additional panels used and docked for no reason except to demonstrate enhanced docking capability (v0.2)
-    $objPanelBottomDock = New Dock(PanelBottom, Me, True, Dock.DockBottom)
-    $objPanelRightSideDock = New Dock(PanelRightSide, Me, True, Dock.DockRight)
-    $objPanelLeftSideDock = New Dock(PanelLeftSide, Me, True, Dock.DockLeft)
-    $objPanelTopDock = New Dock(PanelTop, Me, True, Dock.DockTop)
+    $objPanelBottomDock = New Dock(PanelBottom, True, Dock.DockBottom)
+    $objPanelRightSideDock = New Dock(PanelRightSide, True, Dock.DockRight)
+    $objPanelLeftSideDock = New Dock(PanelLeftSide, True, Dock.DockLeft)
+    $objPanelTopDock = New Dock(PanelTop, True, Dock.DockTop)
 
-    $objHBoxFormButtonsAnchor = New Anchor(HBoxFormButtons, Me, True, Anchor.AnchorLeft + Anchor.AnchorBottom + Anchor.AnchorRight)
-    $objPanelTestAnchor = New Anchor(PanelTest, Me, True, Anchor.AnchorLeft + Anchor.AnchorRight + Anchor.AnchorTop + Anchor.AnchorBottom)
+    $objPanelFormButtonsAnchor = New Anchor(PanelFormButtons, True, Anchor.AnchorLeft + Anchor.AnchorBottom + Anchor.AnchorRight)
+    $objPanelTestAnchor = New Anchor(PanelTest, True, Anchor.AnchorLeft + Anchor.AnchorRight + Anchor.AnchorTop + Anchor.AnchorBottom)
+
+    'PanelFormButtons
+    $objPanelFormButtonsButtonClose = New Dock(ButtonClose, False, Dock.DockRight)
+
+    'PanelStatusbar
+    $objPanelStatusBarStatusMessage = New Anchor(lblStatusMessage, False, Anchor.AnchorLeft + Anchor.AnchorTop + Anchor.AnchorRight)
+    $objPanelStatusBarErrorMessage = New Anchor(lblErrorMessage, False, Anchor.AnchorLeft + Anchor.AnchorBottom + Anchor.AnchorRight)
+    $objPanelStatusBarStatusProgressBar = New Anchor(StatusProgressBar, False, Anchor.AnchorRight)
+    $objPanelStatusBarStatusActionIcon = New Anchor(StatusActionIcon, False, Anchor.AnchorRight)
+    $objPanelStatusBarStatusDirtyIcon = New Anchor(StatusDirtyIcon, False, Anchor.AnchorRight)
 
     Me.Top = Settings["FMain/Top", Me.Top]
     Me.Left = Settings["FMain/Left", Me.Left]
@@ -101,7 +124,19 @@ Public Sub Form_Close()
     Settings["FMain/Height"] = Me.Height
     Settings["FMain/Width"] = Me.Width
 
-    $objHBoxFormButtonsAnchor = Null
+    'Note: As items are freed, they are removed from an internal list managed by DockAnchor. Here I make a practice of removing them in reverse order.
+    'PanelStatusBar
+    $objPanelStatusBarStatusDirtyIcon = Null
+    $objPanelStatusBarStatusActionIcon = Null
+    $objPanelStatusBarStatusProgressBar = Null
+    $objPanelStatusBarErrorMessage = Null
+    $objPanelStatusBarStatusMessage = Null
+
+    'PanelFormButtons
+    $objPanelFormButtonsButtonClose = Null
+
+    'Form
+    $objPanelFormButtonsAnchor = Null
     $objPanelTestAnchor = Null
 
     $objPanelTopDock = Null
@@ -125,6 +160,10 @@ Public Sub Form_Resize()
         Me.Height = $objToolBarActionsDock.$iFormDesignerHeight
     Endif
 
+    ' Note: other containers do not have a Resize event, and the Arrange event seems to fire too often, so try Apply here for container children using DockAnchor
+
+    'Note: run Apply for Form children here
+    'Form
     $objToolBarActionsDock.Apply
     $objStatusBarDock.Apply
     $objPanelBottomDock.Apply
@@ -133,7 +172,18 @@ Public Sub Form_Resize()
     $objPanelTopDock.Apply
 
     $objPanelTestAnchor.Apply
-    $objHBoxFormButtonsAnchor.Apply
+    $objPanelFormButtonsAnchor.Apply
+
+    'Note: run Apply for Container children here
+    'PanelFormButtons
+    $objPanelFormButtonsButtonClose.Apply
+
+    'PanelStatusBar
+    $objPanelStatusBarStatusMessage.Apply
+    $objPanelStatusBarErrorMessage.Apply
+    $objPanelStatusBarStatusProgressBar.Apply
+    $objPanelStatusBarStatusActionIcon.Apply
+    $objPanelStatusBarStatusDirtyIcon.Apply
 
 End
 
