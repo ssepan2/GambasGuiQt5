@@ -22,6 +22,7 @@
       Shortcut = "Ctrl+O"
     }
     { MenuFileSave Menu
+      Action = "FileSave"
       Text = Shortcut(("Save"), "S")
       Picture = Picture["icon:/22/save"]
       Shortcut = "Ctrl+S"
@@ -63,6 +64,11 @@
     }
     { Menu4 Menu
     }
+    { MenuEditSelectAll Menu
+      Action = "EditSelectAll"
+      Text = Shortcut(("Select All"), "A")
+      Shortcut = "Ctrl+A"
+    }
     { MenuEditCut Menu
       Action = "EditCut"
       Text = Shortcut(("Cut"), "t")
@@ -95,6 +101,12 @@
       Picture = Picture["icon:/22/find"]
       Shortcut = "Ctrl+F"
     }
+    { MenuEditReplace Menu
+      Action = "EditReplace"
+      Text = Shortcut(("Replace"), "R") & "..."
+      Picture = Picture["icon:/22/replace"]
+      Shortcut = "Ctrl+H"
+    }
     { Menu6 Menu
     }
     { MenuEditRefresh Menu
@@ -113,12 +125,40 @@
   }
   { MenuHelp Menu
     Text = Shortcut(("Help"), "H")
+    { MenuHelpContents Menu
+      Action = "HelpContents"
+      Text = Shortcut(("Contents"), "C")
+      Picture = Picture["icon:/22/help"]
+      Shortcut = "F1"
+    }
+    { MenuHelpIndex Menu
+      Action = "HelpIndex"
+      Text = Shortcut(("Index"), "I")
+    }
+    { MenuHelpOnlineHelp Menu
+      Action = "HelpOnlineHelp"
+      Text = Shortcut(("Online Help"), "O")
+    }
+    { Menu8 Menu
+    }
+    { MenuHelpLicenceInformation Menu
+      Action = "HelpLicenceInformation"
+      Text = Shortcut(("Licence Information"), "L")
+    }
+    { MenuHelpCheckForUpdates Menu
+      Action = "HelpCheckForUpdates"
+      Text = Shortcut(("Check for Updates"), "C")
+    }
+    { Menu7 Menu
+    }
     { MenuHelpAbout Menu
-      Text = Shortcut(("About"), "A")
+      Action = "HelpAbout"
+      Text = Shortcut(("About"), "A") & "..."
+      Picture = Picture["icon:/22/info"]
     }
   }
   { ToolBarActions ToolBar
-    MoveScaled(1.1429,0,62,4)
+    MoveScaled(1,0,112,4)
     Expand = True
     Separator = True
     { ToolButtonFileNew ToolButton
@@ -154,6 +194,9 @@
       ToolTip = ("Print ") & "..."
       Action = "FilePrint"
       Picture = Picture["icon:/22/print"]
+    }
+    { Separator1 Separator
+      MoveScaled(20,0,1,4)
     }
     { ToolButtonEditUndo ToolButton
       MoveScaled(21,0,4,4)
@@ -197,17 +240,32 @@
       Action = "EditFind"
       Picture = Picture["icon:/22/find"]
     }
-    { ToolButtonEditRefresh ToolButton
+    { ToolButtonEditReplace ToolButton
       MoveScaled(49,0,4,4)
+      ToolTip = ("Replace") & "..."
+      Action = "EditReplace"
+      Picture = Picture["icon:/22/replace"]
+    }
+    { ToolButtonEditRefresh ToolButton
+      MoveScaled(53,0,4,4)
       ToolTip = ("Refresh")
       Action = "EditRefresh"
       Picture = Picture["icon:/22/refresh"]
     }
     { ToolButtonEditProperties ToolButton
-      MoveScaled(53,0,4,4)
+      MoveScaled(57,0,4,4)
       ToolTip = ("Preferences")
       Action = "EditPreferences"
       Picture = Picture["icon:/22/properties"]
+    }
+    { Separator2 Separator
+      MoveScaled(61,0,1,4)
+    }
+    { ToolButtonHelpContents ToolButton
+      MoveScaled(62,0,4,4)
+      ToolTip = ("Help Contents")
+      Action = "HelpContents"
+      Picture = Picture["icon:/22/help"]
     }
   }
   { Panel2 Panel
@@ -271,6 +329,13 @@
   { PanelTest Panel
     MoveScaled(10,27,63,31)
     Border = Border.Plain
+    { GridView1 GridView
+      MoveScaled(0,13,63,18)
+      Mode = Select.Single
+    }
+    { TextArea1 TextArea
+      MoveScaled(1,1,61,11)
+    }
   }
   { PanelBottom Panel
     MoveScaled(1,70,112,5)
@@ -294,6 +359,7 @@
     AutoResize = True
     { ButtonClose Button
       MoveScaled(80,0,16,4)
+      Action = "FileExit"
       Text = ("Close")
     }
   }
@@ -342,14 +408,24 @@
     Shortcut = "F5"
     Picture = "icon:/22/refresh"
   }
+  { Action EditReplace
+    Text = "Replace"
+    Shortcut = "Ctrl+H"
+    Picture = "icon:/22/replace"
+  }
+  { Action EditSelectAll
+    Text = "Select All"
+    Shortcut = "Ctrl+A"
+  }
   { Action EditUndo
     Text = "Undo"
     Shortcut = "Ctrl+Z"
     Picture = "icon:/22/undo"
   }
   { Action FileExit
-    Text = "Exit"
+    Text = "Close"
     Shortcut = "Ctrl+Q"
+    Picture = "$Button"
   }
   { Action FileNew
     Text = "New"
@@ -368,11 +444,38 @@
   }
   { Action FileSave
     Text = "Save"
+    Shortcut = "Ctrl+S"
     Picture = "icon:/22/save"
   }
   { Action FileSaveAs
     Text = "Save As"
     Shortcut = ""
     Picture = "icon:/22/save-as"
+  }
+  { Action HelpAbout
+    Text = "About"
+    Shortcut = ""
+    Picture = "icon:/22/info"
+  }
+  { Action HelpCheckForUpdates
+    Text = "Check for Updates"
+    Shortcut = ""
+  }
+  { Action HelpContents
+    Text = "Contents"
+    Shortcut = "F1"
+    Picture = "icon:/22/help"
+  }
+  { Action HelpIndex
+    Text = "Index"
+    Shortcut = ""
+  }
+  { Action HelpLicenceInformation
+    Text = "Licence Information"
+    Shortcut = ""
+  }
+  { Action HelpOnlineHelp
+    Text = "Online Help"
+    Shortcut = ""
   }
 }

@@ -15,6 +15,11 @@ Private $objPanelTopDock As Dock
 Private $objPanelTestAnchor As Anchor
 Private $objPanelFormButtonsAnchor As Anchor
 
+'PanelGrid
+Private $objPanelGridTexAreaAnchor As Anchor
+
+Private $objPanelGridGridViewDock As Dock
+
 'PanelFormButtons
 Private $objPanelFormButtonsButtonClose As Dock
 
@@ -78,6 +83,65 @@ End
 ' Form
 '
 
+Public Function Action_Activate(sActionName As String) As Boolean
+    'Note: I am not sure I see the benefit of using this dispatch mechanism over direct click events (I like the other aspects of Action).
+    'Maybe if the actions were *directly executed* by the controls *for me* I'd be more sold on the idea.
+    'Having to wire up the dispatching manually seems brittle.
+
+    Select sActionName
+        Case "FileNew"
+            FileNew
+        Case "FileOpen"
+            FileOpen
+        Case "FileSave"
+            FileSave
+        Case "FileSaveAs"
+            FileSaveAs
+        Case "FilePrint"
+            FilePrint
+        Case "FileExit"
+            FileExit
+        Case "EditUndo"
+            EditUndo
+        Case "EditRedo"
+            EditRedo
+        Case "EditSelectAll"
+            EditSelectAll
+        Case "EditCut"
+            EditCut
+        Case "EditCopy"
+            EditCopy
+        Case "EditPaste"
+            EditPaste
+        Case "EditDelete"
+            EditDelete
+        Case "EditFind"
+            EditFind
+        Case "EditReplace"
+            EditReplace
+        Case "EditRefresh"
+            EditRefresh
+        Case "EditPreferences"
+            EditPreferences
+        Case "HelpContents"
+            HelpContents
+        Case "HelpIndex"
+            HelpIndex
+        Case "HelpOnlineHelp"
+            HelpOnlineHelp
+        Case "HelpLicenceInformation"
+            HelpLicenceInformation
+        Case "HelpCheckForUpdates"
+            HelpCheckForUpdates
+        Case "HelpAbout"
+            HelpAbout
+        Case Else
+            Print Subst("Action_Activate: &1", sActionName)
+    End Select
+    Return False
+
+End
+
 Public Sub Form_Open()
 
     'Note: the order instantiated defines an order of precedence for Docks as they examine adjacent Docks to handle stacking and shared corners. Instantiated items are added to an internal list maintained by DockAnchor.
@@ -92,6 +156,10 @@ Public Sub Form_Open()
 
     $objPanelFormButtonsAnchor = New Anchor(PanelFormButtons, True, Anchor.AnchorLeft + Anchor.AnchorBottom + Anchor.AnchorRight)
     $objPanelTestAnchor = New Anchor(PanelTest, True, Anchor.AnchorLeft + Anchor.AnchorRight + Anchor.AnchorTop + Anchor.AnchorBottom)
+
+    'PanelGrid
+    $objPanelGridTexAreaAnchor = New Anchor(TextArea1, False, Anchor.AnchorTop + Anchor.AnchorLeft + Anchor.AnchorBottom + Anchor.AnchorRight)
+    $objPanelGridGridViewDock = New Dock(GridView1, False, Dock.DockBottom)
 
     'PanelFormButtons
     $objPanelFormButtonsButtonClose = New Dock(ButtonClose, False, Dock.DockRight)
@@ -109,6 +177,8 @@ Public Sub Form_Open()
     Me.Width = Settings["FMain/Width", Me.Width]
 
     FileNew
+
+    ' LoadSettingsGrid
 
     Wait 1
 Catch
@@ -134,6 +204,10 @@ Public Sub Form_Close()
 
     'PanelFormButtons
     $objPanelFormButtonsButtonClose = Null
+
+    'PanelGrid
+    $objPanelGridGridViewDock = Null
+    $objPanelGridTexAreaAnchor = Null
 
     'Form
     $objPanelFormButtonsAnchor = Null
@@ -174,6 +248,10 @@ Public Sub Form_Resize()
     $objPanelTestAnchor.Apply
     $objPanelFormButtonsAnchor.Apply
 
+    'PanelGrid
+    $objPanelGridTexAreaAnchor.Apply
+    $objPanelGridGridViewDock.Apply
+
     'Note: run Apply for Container children here
     'PanelFormButtons
     $objPanelFormButtonsButtonClose.Apply
@@ -190,197 +268,14 @@ End
 '
 ' Menu
 '
-Public Sub MenuFileNew_Click()
-
-    FileNew
-
-End
-
-Public Sub MenuFileOpen_Click()
-
-    FileOpen
-
-End
-
-Public Sub MenuFileSave_Click()
-
-    FileSave
-
-End
-
-Public Sub MenuFileSaveAs_Click()
-
-    FileSave(True)
-
-End
-
-Public Sub MenuFilePrint_Click()
-
-    FilePrint
-
-End
-
-Public Sub MenuFileExit_Click()
-
-    FileExit
-
-End
-
-Public Sub MenuEditUndo_Click()
-
-    EditUndo
-
-End
-
-Public Sub MenuEditRedo_Click()
-
-    EditRedo
-
-End
-
-Public Sub MenuEditCut_Click()
-
-    EditCut
-
-End
-
-Public Sub MenuEditCopy_Click()
-
-    EditCopy
-
-End
-
-Public Sub MenuEditPaste_Click()
-
-    EditPaste
-
-End
-
-Public Sub MenuEditDelete_Click()
-
-    EditDelete
-
-End
-
-Public Sub MenuEditFind_Click()
-
-    EditFind
-
-End
-
-Public Sub MenuEditRefresh_Click()
-
-    EditRefresh
-
-End
-
-Public Sub MenuEditProperties_Click()
-
-    EditPreferences
-
-End
-
-Public Sub MenuHelpAbout_Click()
-
-    HelpAbout
-
-End
 
 '
 ' Toolbar
 '
-Public Sub ToolButtonFileNew_Click()
-
-    FileNew
-
-End
-
-Public Sub ToolButtonFileOpen_Click()
-
-    FileOpen
-
-End
-
-Public Sub ToolButtonFileSave_Click()
-
-    FileSave
-
-End
-
-Public Sub ToolButtonFileSaveAs_Click()
-
-    FileSave(True)
-
-End
-
-Public Sub ToolButtonFilePrint_Click()
-
-    FilePrint
-
-End
-
-Public Sub ToolButtonEditUndo_Click()
-
-    EditUndo
-
-End
-
-Public Sub ToolButtonEditRedo_Click()
-
-    EditRedo
-
-End
-
-Public Sub ToolButtonEditCut_Click()
-
-    EditCut
-
-End
-
-Public Sub ToolButtonEditCopy_Click()
-
-    EditCopy
-
-End
-
-Public Sub ToolButtonEditPaste_Click()
-
-    EditPaste
-
-End
-
-Public Sub ToolButtonEditDelete_Click()
-
-    EditDelete
-
-End
-
-Public Sub ToolButtonEditFind_Click()
-
-    EditFind
-
-End
-
-Public Sub ToolButtonEditRefresh_Click()
-
-    EditRefresh
-
-End
-
-Public Sub ToolButtonEditProperties_Click()
-
-    EditPreferences
-
-End
 
 '
 ' Controls
 '
-Public Sub ButtonClose_Click()
-
-    FileExit
-
-End
 
 Public Sub SomeStringTextBox_Change()
 
@@ -415,6 +310,13 @@ End
 '
 ' ViewModel
 '
+'temp
+Private Function Something() As Boolean
+
+    Wait 1
+    Return True
+
+End
 
 Public Sub FileNew()
 
@@ -586,6 +488,12 @@ Catch
 
 End 'Sub
 
+Public Sub FileSaveAs()
+
+    FileSave(True)
+
+End
+
 Public Sub FilePrint()
 
     Dim sStatusMessage As String
@@ -640,14 +548,6 @@ Catch
 
 End 'Sub
 
-'temp
-Private Function Something() As Boolean
-
-    Wait 1
-    Return True
-
-End
-
 Public Sub EditUndo()
 
     Dim sStatusMessage As String
@@ -697,6 +597,32 @@ Catch
     Debug Error.Text
 
     StopProgressBar(Null, "Redo failed: '" & Error.Text & "'")
+
+End
+
+Public Sub EditSelectAll()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Select All...", Null, Null, True, 33)
+    Action["EditSelectAll"].Enabled = False
+
+    If Something() Then 'TODO: SelectAll
+        sStatusMessage = "Select All done."
+    Else
+        sStatusMessage = "Select All cancelled."
+    Endif
+Finally
+    Action["EditSelectAll"].Enabled = True
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+    StopProgressBar(Null, "Select All failed: '" & Error.Text & "'")
 
 End
 
@@ -830,6 +756,32 @@ Catch
 
 End
 
+Public Sub EditReplace()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Replace...", Null, Action["EditReplace"].Picture, True, 33)
+    Action["EditReplace"].Enabled = False
+
+    If Something() Then 'TODO:Replace
+        sStatusMessage = "Replace done."
+    Else
+        sStatusMessage = "Replace cancelled."
+    Endif
+Finally
+    Action["EditReplace"].Enabled = True
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+    StopProgressBar(Null, "Replace failed: '" & Error.Text & "'")
+
+End
+
 Public Sub EditRefresh()
 
     Dim sStatusMessage As String
@@ -882,12 +834,142 @@ Catch
 
 End 'Sub
 
+Public Sub HelpContents()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Contents...", Null, Action["HelpContents"].Picture, True, 33)
+    Action["HelpContents"].Enabled = False
+
+    If Something() Then 'TODO:Contents
+        sStatusMessage = "Contents done."
+    Else
+        sStatusMessage = "Contents cancelled."
+    Endif
+Finally
+    Action["HelpContents"].Enabled = True
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+    StopProgressBar(Null, "Contents failed: '" & Error.Text & "'")
+
+End
+
+Public Sub HelpIndex()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Index...", Null, Null, True, 33)
+    Action["HelpIndex"].Enabled = False
+
+    If Something() Then 'TODO:Index
+        sStatusMessage = "Index done."
+    Else
+        sStatusMessage = "Index cancelled."
+    Endif
+Finally
+    Action["HelpIndex"].Enabled = True
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+    StopProgressBar(Null, "Index failed: '" & Error.Text & "'")
+
+End
+
+Public Sub HelpOnlineHelp()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Online Help...", Null, Null, True, 33)
+    Action["HelpOnlineHelp"].Enabled = False
+
+    If Something() Then 'TODO:OnlineHelp
+        sStatusMessage = "Online Help done."
+    Else
+        sStatusMessage = "Online Help cancelled."
+    Endif
+Finally
+    Action["HelpOnlineHelp"].Enabled = True
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+    StopProgressBar(Null, "Online Help failed: '" & Error.Text & "'")
+
+End
+
+Public Sub HelpLicenceInformation()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Licence Information...", Null, Null, True, 33)
+    Action["HelpLicenceInformation"].Enabled = False
+
+    If Something() Then 'TODO:LicenceInformation
+        sStatusMessage = "Licence Information done."
+    Else
+        sStatusMessage = "Licence Information cancelled."
+    Endif
+Finally
+    Action["HelpLicenceInformation"].Enabled = True
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+    StopProgressBar(Null, "Licence Information failed: '" & Error.Text & "'")
+
+End
+
+Public Sub HelpCheckForUpdates()
+
+    Dim sStatusMessage As String
+
+    lblStatusMessage.Text = ""
+    lblErrorMessage.Text = ""
+
+    StartProgressBarWithPicture("Check For Updates...", Null, Null, True, 33)
+    Action["HelpCheckForUpdates"].Enabled = False
+
+    If Something() Then 'TODO:CheckForUpdates
+        sStatusMessage = "Check For Updates done."
+    Else
+        sStatusMessage = "Check For Updates cancelled."
+    Endif
+Finally
+    Action["HelpCheckForUpdates"].Enabled = True
+    StopProgressBar(sStatusMessage)
+Catch
+    Debug Log.FormatError
+    Debug Error.Text
+
+    StopProgressBar(Null, "Check For Updates failed: '" & Error.Text & "'")
+
+End
+
 Public Sub HelpAbout()
 
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("About...", Null, Null, True, 33)
+    StartProgressBarWithPicture("About...", Null, Action["HelpAbout"].Picture, True, 33)
     Action["HelpAbout"].Enabled = False
 
     Message("About " & Dialogs.FormatAbout())
@@ -901,6 +983,15 @@ Catch 'ex As Exception
     StopProgressBar(Null, Error.Text)
 
 End 'Sub
+
+' Public Function HelpAbout(objControl As Object) As Boolean
+'
+'     Print "HelpAbout_Activate" & objControl.Name
+'     Return False
+'
+' End
+
+'ViewModel
 
 ''' <summary>
 ''' Use when Marquee-style progress bar is not sufficient, and percentages must be indicated.
@@ -1084,5 +1175,28 @@ Catch 'ex As Exception
     Error.Propagate 'Throw
 
 End 'Sub
+
+' Private Sub LoadSettingsGrid()
+'
+'     Dim sSlot, sKey As String
+'     Dim iCurrentRow As Integer = 0
+'
+'     GridView1.AddColumn("Slot", -1, Align.Left)
+'     GridView1.AddColumn("Key", -1, Align.Left)
+'     GridView1.AddColumn("Value", -1, Align.Normal)
+'     GridView1.Header = GridView.Both
+'     For Each sSlot In Settings.Keys
+'         For Each sKey In Settings.Keys[sSlot]
+'             Print Subst("&1/&2", sSlot, sKey)
+'             GridView1.Rows.Insert(iCurrentRow)
+'             GridView1[iCurrentRow, 0].Text = sSlot
+'             GridView1[iCurrentRow, 1].Text = sKey
+'             GridView1[iCurrentRow, 2].Text = Settings[Subst("&1/&2", sSlot, sKey), ""]
+'
+'             iCurrentRow += 1
+'         Next
+'     Next
+'
+' End
 
 ' #End Region
