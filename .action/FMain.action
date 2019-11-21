@@ -1,0 +1,115 @@
+# Gambas Action File 3.0
+
+{ Actions
+  { Action EditCopy
+    Text = "Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/22/copy"
+  }
+  { Action EditCut
+    Text = "Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/22/cut"
+  }
+  { Action EditDelete
+    Text = "Delete"
+    Shortcut = "Del"
+    Picture = "icon:/22/delete"
+  }
+  { Action EditFind
+    Text = "Find"
+    Shortcut = "Ctrl+F"
+    Picture = "icon:/22/find"
+  }
+  { Action EditPaste
+    Text = "Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/22/paste"
+  }
+  { Action EditPreferences
+    Text = "Preferences"
+    Shortcut = ""
+    Picture = "icon:/22/properties"
+  }
+  { Action EditRedo
+    Text = "Redo"
+    Shortcut = "Ctrl+Y"
+    Picture = "icon:/22/redo"
+  }
+  { Action EditRefresh
+    Text = "Refresh"
+    Shortcut = "F5"
+    Picture = "icon:/22/refresh"
+  }
+  { Action EditReplace
+    Text = "Replace"
+    Shortcut = "Ctrl+H"
+    Picture = "icon:/22/replace"
+  }
+  { Action EditSelectAll
+    Text = "Select All"
+    Shortcut = "Ctrl+A"
+  }
+  { Action EditUndo
+    Text = "Undo"
+    Shortcut = "Ctrl+Z"
+    Picture = "icon:/22/undo"
+  }
+  { Action FileExit
+    Text = "Close"
+    Shortcut = "Ctrl+Q"
+    Picture = "$Button"
+  }
+  { Action FileNew
+    Text = "New"
+    Shortcut = "Ctrl+N"
+    Picture = "icon:/22/new"
+  }
+  { Action FileOpen
+    Text = "Open"
+    Shortcut = "Ctrl+O"
+    Picture = "icon:/22/open"
+  }
+  { Action FilePrint
+    Text = "Print"
+    Shortcut = "Ctrl+P"
+    Picture = "icon:/22/print"
+  }
+  { Action FileSave
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/22/save"
+  }
+  { Action FileSaveAs
+    Text = "Save As"
+    Shortcut = ""
+    Picture = "icon:/22/save-as"
+  }
+  { Action HelpAbout
+    Text = "About"
+    Shortcut = ""
+    Picture = "icon:/22/info"
+  }
+  { Action HelpCheckForUpdates
+    Text = "Check for Updates"
+    Shortcut = ""
+  }
+  { Action HelpContents
+    Text = "Contents"
+    Shortcut = "F1"
+    Picture = "icon:/22/help"
+  }
+  { Action HelpIndex
+    Text = "Index"
+    Shortcut = ""
+  }
+  { Action HelpLicenceInformation
+    Text = "Licence Information"
+    Shortcut = ""
+  }
+  { Action HelpOnlineHelp
+    Text = "Online Help"
+    Shortcut = ""
+  }
+}
+
