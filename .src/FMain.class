@@ -68,8 +68,7 @@ Public Sub $objModel_PropertyChanged(propertyName As String)
 Finally
     $bStopControlEvents = False
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
 End
 ' #End Region
@@ -182,8 +181,7 @@ Public Sub Form_Open()
 
     Wait 1
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
 End
 
@@ -220,8 +218,7 @@ Public Sub Form_Close()
     $objStatusBarDock = Null
     $objToolBarActionsDock = Null
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
 End
 
@@ -361,8 +358,7 @@ Finally
     Action["FileNew"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError 'TODO:get this dump into a log file
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar("", Error.Text)
 
@@ -428,8 +424,7 @@ Finally
     Action["FileOpen"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, Error.Text) 'Note:Finally fires before Catch
 
@@ -481,8 +476,7 @@ Finally
     Endif
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, Error.Text)
 
@@ -513,8 +507,7 @@ Finally
     Action["FilePrint"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Print failed: '" & Error.Text & "'")
 
@@ -543,8 +536,7 @@ Public Sub FileExit()
     Me.Close
 
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
 End 'Sub
 
@@ -567,8 +559,7 @@ Finally
     Action["EditUndo"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Undo failed: '" & Error.Text & "'")
 
@@ -593,8 +584,7 @@ Finally
     Action["EditRedo"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Redo failed: '" & Error.Text & "'")
 
@@ -619,8 +609,7 @@ Finally
     Action["EditSelectAll"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Select All failed: '" & Error.Text & "'")
 
@@ -645,8 +634,7 @@ Finally
     Action["EditCut"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Cut failed: '" & Error.Text & "'")
 
@@ -671,8 +659,7 @@ Finally
     Action["EditCopy"].Enabled = True
     StopProgressBar("Copied.")
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Copy failed: " & Error.Text & "")
 
@@ -697,8 +684,7 @@ Finally
     Action["EditPaste"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Paste failed: '" & Error.Text & "'")
 
@@ -723,8 +709,7 @@ Finally
     Action["EditDelete"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Delete failed: '" & Error.Text & "'")
 
@@ -749,8 +734,7 @@ Finally
     Action["EditFind"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Find failed: '" & Error.Text & "'")
 
@@ -775,8 +759,7 @@ Finally
     Action["EditReplace"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Replace failed: '" & Error.Text & "'")
 
@@ -801,8 +784,7 @@ Finally
     Action["EditRefresh"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Refresh failed: '" & Error.Text & "'")
 
@@ -827,8 +809,7 @@ Finally
     Action["EditPreferences"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Preferences failed: '" & Error.Text & "'")
 
@@ -853,8 +834,7 @@ Finally
     Action["HelpContents"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Contents failed: '" & Error.Text & "'")
 
@@ -879,8 +859,7 @@ Finally
     Action["HelpIndex"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Index failed: '" & Error.Text & "'")
 
@@ -905,8 +884,7 @@ Finally
     Action["HelpOnlineHelp"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Online Help failed: '" & Error.Text & "'")
 
@@ -931,8 +909,7 @@ Finally
     Action["HelpLicenceInformation"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Licence Information failed: '" & Error.Text & "'")
 
@@ -957,8 +934,7 @@ Finally
     Action["HelpCheckForUpdates"].Enabled = True
     StopProgressBar(sStatusMessage)
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, "Check For Updates failed: '" & Error.Text & "'")
 
@@ -972,13 +948,12 @@ Public Sub HelpAbout()
     StartProgressBarWithPicture("About...", Null, Action["HelpAbout"].Picture, True, 33)
     Action["HelpAbout"].Enabled = False
 
-    Message("About " & Dialogs.FormatAbout())
+    Message(Dialogs.FormatAbout())
 Finally
     Action["HelpAbout"].Enabled = True
     StopProgressBar("About completed.")
 Catch 'ex As Exception
-    Debug Log.FormatError 'Log.Write( Error , System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     StopProgressBar(Null, Error.Text)
 
@@ -1027,8 +1002,7 @@ Public Sub StartProgressBarWithImage(sStatusMessage As String, sErrorMessage As 
     'give the app time to draw the eye-candy, even if its only for an instant
     Wait
 Catch 'ex As Exception
-    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     Error.Propagate 'Throw
 
@@ -1068,8 +1042,7 @@ Public Sub StartProgressBarWithPicture(sStatusMessage As String, sErrorMessage A
     'give the app time to draw the eye-candy, even if its only for an instant
     Wait
 Catch 'ex As Exception
-    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     Error.Propagate 'Throw
 
@@ -1099,8 +1072,7 @@ Public Sub UpdateProgressBar(sStatusMessage As String, iProgressBarValue As Inte
     'give the app time to draw the eye-candy, even if its only for an instant
     Wait
 Catch 'ex As Exception
-    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     Error.Propagate 'Throw
 
@@ -1128,8 +1100,7 @@ Public Sub UpdateStatusBarMessages(sStatusMessage As String, sErrorMessage As St
     'give the app time to draw the eye-candy, even if its only for an instant
     Wait 'Application.DoEvents();
 Catch 'ex As Exception
-    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     Error.Propagate 'Throw
 
@@ -1169,8 +1140,7 @@ Public Sub StopProgressBar(sStatusMessage As String, Optional sErrorMessage As S
     'give the app time to draw the eye-candy, even if its only for an instant
     Wait 'Application.DoEvents();
 Catch 'ex As Exception
-    Debug Log.FormatError 'Log.Write(ex, System.Reflection.MethodBase.GetCurrentMethod(), System.Diagnostics.EventLogEntryType.[ Error ])
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
     Error.Propagate 'Throw
 

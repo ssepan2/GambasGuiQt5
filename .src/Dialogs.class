@@ -1,5 +1,7 @@
 ' Gambas class file
 
+'Use "gb.Desktop"
+
 ' Export
 Create Static
 
@@ -7,11 +9,10 @@ Public Function FormatAbout() As String
 
     Dim sResult As String = Null
 
-    sResult &= Subst("&1\r\n&2\r\n&3\r\n&4\r\n&5\r\n", Application.Name, Application.Title, Application.Version, Application.Id, Application.Path)
+    sResult &= Subst("Name: &1\r\nTitle: &2\r\nVersion: &3\r\nProcess: &4\r\nPath: &5\r\n", Application.Name, Application.Title, Application.Version, Application.Id, Application.Path)
     Return sResult
 Catch 'ex As Exception
-    Debug Log.FormatError() 'Error.Text 'TODO:get this dump into a log file
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
     Return ""
 
 End

@@ -89,8 +89,7 @@ Public Sub SaveToSettings()
 
     Me.Dirty = False
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
     Debug "Key: " & Me.Key
 
 End
@@ -139,8 +138,7 @@ Public Function OpenFromSettings() As Boolean 'As SomeModel 'model As SomeModel
     Return returnValue
 Finally
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
     Debug "Key: " & Me.Key
     Return returnValue
 
@@ -163,7 +161,6 @@ Public Sub RefreshModel(Optional bPreserveDirty As Boolean = False)
 Finally
     $bForceNotify = False
 Catch
-    Debug Log.FormatError
-    Debug Error.Text
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
 End
