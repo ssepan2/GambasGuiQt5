@@ -2,7 +2,7 @@ Main
 Gambas Gui Qt5
 0
 0
-0.6.3
+0.7.1
 
 gb.args
 gb.image
@@ -10,6 +10,6 @@ gb.gui.qt
 gb.form
 gb.settings
 gb.form.mdi
-:stephensepan/AppUtility:0.1
-:stephensepan/DockAnchor:0.4
+:stephensepan/GambasAppUtilityLib:0.2
+:stephensepan/DockAnchor:0.5
 
