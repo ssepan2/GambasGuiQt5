@@ -294,6 +294,16 @@ Public Sub SomeBooleanCheckBox_Click()
 
 End
 
+Public Sub SomeDateTimeValueBox_Change()
+
+    If $bStopControlEvents Then
+        Stop Event
+    Else
+        $objModel.SomeDateTime = SomeDateTimeValueBox.Value
+    Endif
+
+End
+
 '
 ' ViewModel
 '
@@ -399,7 +409,7 @@ Public Sub FileOpen()
             sStatusMessage = "Open cancelled during model name input."
         Else
             'OPEN
-            If $objModel.OpenFromSettings() Then
+            If $objModel.OpenFromSettings(Settings) Then
 
                 sStatusMessage = "Opened '" & response & "'."
             Else
@@ -454,7 +464,7 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
         sStatusMessage = "Save cancelled during model name input."
     Else
         'SAVE
-        $objModel.SaveToSettings 'TODO:if saveas, read and if already present, prompt to replace
+        $objModel.SaveToSettings(Settings) 'TODO:if saveas, read and if already present, prompt to replace
         sStatusMessage = "Saved '" & $objModel.Key & "'."
     Endif
 
