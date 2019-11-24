@@ -269,31 +269,41 @@
     }
   }
   { Panel2 Panel
-    MoveScaled(10,11,63,14)
+    MoveScaled(10,11,63,19)
     { SomeStringLabel Label
-      MoveScaled(0,0,13,4)
+      MoveScaled(1,0,13,4)
       Text = ("Some String:")
       Alignment = Align.Right
     }
     { SomeStringTextBox TextBox
-      MoveScaled(14,0,24,4)
+      MoveScaled(15,0,24,4)
     }
     { SomeIntegerLabel Label
-      MoveScaled(0,5,13,4)
+      MoveScaled(1,4,13,4)
       Text = ("Some Integer:")
       Alignment = Align.Right
     }
     { SomeIntegerValueBox ValueBox
-      MoveScaled(14,5,24,4)
+      MoveScaled(15,4,24,4)
       Alignment = Align.Right
     }
     { SomeBooleanLabel Label
-      MoveScaled(0,10,13,4)
+      MoveScaled(1,8,13,4)
       Text = ("Some Boolean:")
       Alignment = Align.Right
     }
     { SomeBooleanCheckBox CheckBox
-      MoveScaled(14,10,4,4)
+      MoveScaled(15,8,4,4)
+    }
+    { SomeDateTimeLabel Label
+      MoveScaled(1,12,13,4)
+      Text = ("Some DateTime:")
+      Alignment = Align.Right
+    }
+    { SomeDateTimeValueBox ValueBox
+      MoveScaled(15,12,24,4)
+      Alignment = Align.Right
+      Type = ValueBox.DateTime
     }
   }
   { PanelStatusBar Panel
@@ -327,10 +337,10 @@
     }
   }
   { PanelTest Panel
-    MoveScaled(10,27,63,31)
+    MoveScaled(10,31,63,38)
     Border = Border.Plain
     { GridView1 GridView
-      MoveScaled(0,13,63,18)
+      MoveScaled(0,13,63,25)
       Mode = Select.Single
     }
     { TextArea1 TextArea
@@ -353,15 +363,10 @@
     MoveScaled(6,4,102,5)
     Border = Border.Raised
   }
-  { PanelFormButtons Panel
-    MoveScaled(10,61,96,4)
-    Expand = True
-    AutoResize = True
-    { ButtonClose Button
-      MoveScaled(80,0,16,4)
-      Action = "FileExit"
-      Text = ("Close")
-    }
+  { ButtonClose Button
+    MoveScaled(90,64,16,4)
+    Action = "FileExit"
+    Text = ("Close")
   }
 }
 
