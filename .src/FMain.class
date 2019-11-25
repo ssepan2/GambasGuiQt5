@@ -1,6 +1,8 @@
 ' Gambas class file
 
 ' #Region "Declarations"
+Private $objStatusBarViewModel As StatusBarViewModel
+
 Private $objModel As SomeModel = Null
 Private $bStopControlEvents As Boolean = False
 
@@ -57,13 +59,14 @@ Public Sub $objModel_PropertyChanged(propertyName As String)
         Case "SomeBoolean"
             SomeBooleanCheckBox.Value = $objModel.SomeBoolean
             ' Debug Subst("&1: &2", propertyName, $objModel.SomeBoolean)
-            StatusDirtyIcon.Visible = $objModel.Dirty
+            'StatusDirtyIcon.Visible = $objModel.Dirty'TODO:bug? Delete?
             ' Debug Subst("&1: &2", propertyName, $objModel.Dirty)
         Case "SomeDateTime"
             SomeDateTimeValueBox.value = $objModel.SomeDateTime
             ' Debug Subst("&1: &2", propertyName, $objModel.SomeDateTime)
         Case "Dirty"
-            StatusDirtyIcon.Visible = $objModel.Dirty
+            ' StatusDirtyIcon.Visible = $objModel.Dirty 'use wrapper sub in viewmodel
+            $objStatusBarViewModel.SetDirtyIndicator($objModel.Dirty)
             ' Debug Subst("&1: &2", propertyName, $objModel.Dirty)
         Case Else
             Debug "unhandled event:" & propertyName
@@ -147,6 +150,9 @@ End
 
 Public Sub Form_Open()
 
+    'ViewModel
+    $objStatusBarViewModel = New StatusBarViewModel(lblStatusMessage, lblErrorMessage, StatusProgressBar, StatusActionIcon, StatusDirtyIcon) 'Don't use 'Me.' or caller will say  'wanted x got Function instead'
+
     'Note: the order instantiated defines an order of precedence for Docks as they examine adjacent Docks to handle stacking and shared corners. Instantiated items are added to an internal list maintained by DockAnchor.
     'Form
     $objToolBarActionsDock = New Dock(ToolBarActions, True, Dock.DockTop)
@@ -209,6 +215,9 @@ Public Sub Form_Close()
     $objPanelBottomDock = Null
     $objStatusBarDock = Null
     $objToolBarActionsDock = Null
+
+    'ViewModel
+    $objStatusBarViewModel = Null
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
@@ -341,7 +350,7 @@ Public Sub FileNew()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("New...", Null, Action["FileNew"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("New...", Null, Action["FileNew"].Picture, True, 33)
     Action["FileNew"].Enabled = False
 
     If bCancel Then
@@ -351,16 +360,16 @@ Public Sub FileNew()
         $objModel = New SomeModel(Me, "$objModel")
 
         $objModel.RefreshModel
-        StopProgressBar("New completed")
+        $objStatusBarViewModel.StopProgressBar("New completed")
         sStatusMessage = "New completed"
     Endif
 Finally
     Action["FileNew"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar("", Error.Text)
+    $objStatusBarViewModel.StopProgressBar("", Error.Text)
 
 End 'Sub
 
@@ -392,7 +401,7 @@ Public Sub FileOpen()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Opening...", Null, Action["FileOpen"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Opening...", Null, Action["FileOpen"].Picture, True, 33)
     Action["FileOpen"].Enabled = False
 
     If bCancel Then
@@ -422,11 +431,11 @@ Public Sub FileOpen()
     Endif
 Finally
     Action["FileOpen"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, Error.Text) 'Note:Finally fires before Catch
+    $objStatusBarViewModel.StopProgressBar(Null, Error.Text) 'Note:Finally fires before Catch
 
 End 'Sub
 
@@ -444,10 +453,10 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
     lblErrorMessage.Text = ""
 
     If bSaveAs Then
-        StartProgressBarWithPicture("Saving As...", Null, Action["FileSaveAs"].Picture, True, 33)
+        $objStatusBarViewModel.StartProgressBarWithPicture("Saving As...", Null, Action["FileSaveAs"].Picture, True, 33)
         Action["FileSaveAs"].Enabled = False
     Else
-        StartProgressBarWithPicture("Saving...", Null, Action["FileSave"].Picture, True, 33)
+        $objStatusBarViewModel.StartProgressBarWithPicture("Saving...", Null, Action["FileSave"].Picture, True, 33)
         Action["FileSave"].Enabled = False
     Endif
 
@@ -474,11 +483,11 @@ Finally
     Else
         Action["FileSave"].Enabled = True
     Endif
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, Error.Text)
+    $objStatusBarViewModel.StopProgressBar(Null, Error.Text)
 
 End 'Sub
 
@@ -495,7 +504,7 @@ Public Sub FilePrint()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Printing...", Null, Action["FilePrint"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Printing...", Null, Action["FilePrint"].Picture, True, 33)
     Action["FilePrint"].Enabled = False
 
     If Something() Then 'TODO:print
@@ -505,11 +514,11 @@ Public Sub FilePrint()
     Endif
 Finally
     Action["FilePrint"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Print failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Print failed: '" & Error.Text & "'")
 
 End 'Sub
 
@@ -547,7 +556,7 @@ Public Sub EditUndo()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Undo...", Null, Action["EditUndo"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Undo...", Null, Action["EditUndo"].Picture, True, 33)
     Action["EditUndo"].Enabled = False
 
     If Something() Then 'TODO:undo
@@ -557,11 +566,11 @@ Public Sub EditUndo()
     Endif
 Finally
     Action["EditUndo"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Undo failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Undo failed: '" & Error.Text & "'")
 
 End
 
@@ -572,7 +581,7 @@ Public Sub EditRedo()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Redo...", Null, Action["EditRedo"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Redo...", Null, Action["EditRedo"].Picture, True, 33)
     Action["EditRedo"].Enabled = False
 
     If Something() Then 'TODO: redo
@@ -582,11 +591,11 @@ Public Sub EditRedo()
     Endif
 Finally
     Action["EditRedo"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Redo failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Redo failed: '" & Error.Text & "'")
 
 End
 
@@ -597,7 +606,7 @@ Public Sub EditSelectAll()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Select All...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Select All...", Null, Null, True, 33)
     Action["EditSelectAll"].Enabled = False
 
     If Something() Then 'TODO: SelectAll
@@ -607,11 +616,11 @@ Public Sub EditSelectAll()
     Endif
 Finally
     Action["EditSelectAll"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Select All failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Select All failed: '" & Error.Text & "'")
 
 End
 
@@ -622,7 +631,7 @@ Public Sub EditCut()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Cut...", Null, Action["EditCut"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Cut...", Null, Action["EditCut"].Picture, True, 33)
     Action["EditCut"].Enabled = False
 
     If Something() Then 'TODO:cut
@@ -632,11 +641,11 @@ Public Sub EditCut()
     Endif
 Finally
     Action["EditCut"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Cut failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Cut failed: '" & Error.Text & "'")
 
 End
 
@@ -647,7 +656,7 @@ Public Sub EditCopy()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Copying...", Null, Action["EditCopy"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Copying...", Null, Action["EditCopy"].Picture, True, 33)
     Action["EditCopy"].Enabled = False
 
     If Something() Then 'TODO:copy
@@ -657,11 +666,11 @@ Public Sub EditCopy()
     Endif
 Finally
     Action["EditCopy"].Enabled = True
-    StopProgressBar("Copied.")
+    $objStatusBarViewModel.StopProgressBar("Copied.")
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Copy failed: " & Error.Text & "")
+    $objStatusBarViewModel.StopProgressBar(Null, "Copy failed: " & Error.Text & "")
 
 End 'Sub
 
@@ -672,7 +681,7 @@ Public Sub EditPaste()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Paste...", Null, Action["EditPaste"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Paste...", Null, Action["EditPaste"].Picture, True, 33)
     Action["EditPaste"].Enabled = False
 
     If Something() Then 'TODO:paste
@@ -682,11 +691,11 @@ Public Sub EditPaste()
     Endif
 Finally
     Action["EditPaste"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Paste failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Paste failed: '" & Error.Text & "'")
 
 End
 
@@ -697,7 +706,7 @@ Public Sub EditDelete()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Delete...", Null, Action["EditDelete"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Delete...", Null, Action["EditDelete"].Picture, True, 33)
     Action["EditDelete"].Enabled = False
 
     If Something() Then 'TODO:delete
@@ -707,11 +716,11 @@ Public Sub EditDelete()
     Endif
 Finally
     Action["EditDelete"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Delete failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Delete failed: '" & Error.Text & "'")
 
 End
 
@@ -722,7 +731,7 @@ Public Sub EditFind()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Find...", Null, Action["EditFind"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Find...", Null, Action["EditFind"].Picture, True, 33)
     Action["EditFind"].Enabled = False
 
     If Something() Then 'TODO:find
@@ -732,11 +741,11 @@ Public Sub EditFind()
     Endif
 Finally
     Action["EditFind"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Find failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Find failed: '" & Error.Text & "'")
 
 End
 
@@ -747,7 +756,7 @@ Public Sub EditReplace()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Replace...", Null, Action["EditReplace"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Replace...", Null, Action["EditReplace"].Picture, True, 33)
     Action["EditReplace"].Enabled = False
 
     If Something() Then 'TODO:Replace
@@ -757,11 +766,11 @@ Public Sub EditReplace()
     Endif
 Finally
     Action["EditReplace"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Replace failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Replace failed: '" & Error.Text & "'")
 
 End
 
@@ -772,7 +781,7 @@ Public Sub EditRefresh()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Refresh...", Null, Action["EditRefresh"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Refresh...", Null, Action["EditRefresh"].Picture, True, 33)
     Action["EditRefresh"].Enabled = False
 
     If Something() Then 'TODO:refresh
@@ -782,11 +791,11 @@ Public Sub EditRefresh()
     Endif
 Finally
     Action["EditRefresh"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Refresh failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Refresh failed: '" & Error.Text & "'")
 
 End
 
@@ -797,7 +806,7 @@ Public Sub EditPreferences()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Preferences...", Null, Action["EditPreferences"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Preferences...", Null, Action["EditPreferences"].Picture, True, 33)
     Action["EditPreferences"].Enabled = False
 
     If Something() Then 'TODO:Preferences
@@ -807,11 +816,11 @@ Public Sub EditPreferences()
     Endif
 Finally
     Action["EditPreferences"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Preferences failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Preferences failed: '" & Error.Text & "'")
 
 End 'Sub
 
@@ -822,7 +831,7 @@ Public Sub HelpContents()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Contents...", Null, Action["HelpContents"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Contents...", Null, Action["HelpContents"].Picture, True, 33)
     Action["HelpContents"].Enabled = False
 
     If Something() Then 'TODO:Contents
@@ -832,11 +841,11 @@ Public Sub HelpContents()
     Endif
 Finally
     Action["HelpContents"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Contents failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Contents failed: '" & Error.Text & "'")
 
 End
 
@@ -847,7 +856,7 @@ Public Sub HelpIndex()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Index...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Index...", Null, Null, True, 33)
     Action["HelpIndex"].Enabled = False
 
     If Something() Then 'TODO:Index
@@ -857,11 +866,11 @@ Public Sub HelpIndex()
     Endif
 Finally
     Action["HelpIndex"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Index failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Index failed: '" & Error.Text & "'")
 
 End
 
@@ -872,7 +881,7 @@ Public Sub HelpOnlineHelp()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Online Help...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Online Help...", Null, Null, True, 33)
     Action["HelpOnlineHelp"].Enabled = False
 
     If Something() Then 'TODO:OnlineHelp
@@ -882,11 +891,11 @@ Public Sub HelpOnlineHelp()
     Endif
 Finally
     Action["HelpOnlineHelp"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Online Help failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Online Help failed: '" & Error.Text & "'")
 
 End
 
@@ -897,7 +906,7 @@ Public Sub HelpLicenceInformation()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Licence Information...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Licence Information...", Null, Null, True, 33)
     Action["HelpLicenceInformation"].Enabled = False
 
     If Something() Then 'TODO:LicenceInformation
@@ -907,11 +916,11 @@ Public Sub HelpLicenceInformation()
     Endif
 Finally
     Action["HelpLicenceInformation"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Licence Information failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Licence Information failed: '" & Error.Text & "'")
 
 End
 
@@ -922,7 +931,7 @@ Public Sub HelpCheckForUpdates()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("Check For Updates...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("Check For Updates...", Null, Null, True, 33)
     Action["HelpCheckForUpdates"].Enabled = False
 
     If Something() Then 'TODO:CheckForUpdates
@@ -932,11 +941,11 @@ Public Sub HelpCheckForUpdates()
     Endif
 Finally
     Action["HelpCheckForUpdates"].Enabled = True
-    StopProgressBar(sStatusMessage)
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, "Check For Updates failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, "Check For Updates failed: '" & Error.Text & "'")
 
 End
 
@@ -945,204 +954,17 @@ Public Sub HelpAbout()
     lblStatusMessage.Text = ""
     lblErrorMessage.Text = ""
 
-    StartProgressBarWithPicture("About...", Null, Action["HelpAbout"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture("About...", Null, Action["HelpAbout"].Picture, True, 33)
     Action["HelpAbout"].Enabled = False
 
     Message(Dialogs.FormatAbout())
 Finally
     Action["HelpAbout"].Enabled = True
-    StopProgressBar("About completed.")
+    $objStatusBarViewModel.StopProgressBar("About completed.")
 Catch 'ex As Exception
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    StopProgressBar(Null, Error.Text)
-
-End 'Sub
-
-' Public Function HelpAbout(objControl As Object) As Boolean
-'
-'     Print "HelpAbout_Activate" & objControl.Name
-'     Return False
-'
-' End
-
-'ViewModel
-
-''' <summary>
-''' Use when Marquee-style progress bar is not sufficient, and percentages must be indicated.
-''' WPF.
-''' </summary>
-''' <param name="sStatusMessage"></param>
-''' <param name="errorMessage"></param>
-''' <param name="objImage"></param>
-''' <param name="isMarqueeProgressBarStyle"></param>
-''' <param name="iProgressBarValue"></param>
-Public Sub StartProgressBarWithImage(sStatusMessage As String, sErrorMessage As String, objImage As Image, isMarqueeProgressBarStyle As Boolean, iProgressBarValue As Integer)
-
-    StatusProgressBar.Pulse = isMarqueeProgressBarStyle
-    'set to blocks if actual percentage was used.
-    StatusProgressBar.Value = iProgressBarValue
-    'set to value if percentage used.
-    'if Style is not Marquee, then we are marking either a count or percentage
-    If iProgressBarValue > 1 Then 'StatusProgressBar.Maximum
-        'StatusProgressBar.Step = 1
-        StatusProgressBar.Value = 1
-    Endif
-
-    lblStatusMessage.Text = sStatusMessage
-    lblErrorMessage.Text = sErrorMessage
-    lblErrorMessage.ToolTip = sErrorMessage
-
-    StatusProgressBar.Visible = True
-
-    StatusActionIcon.Image = objImage
-    StatusActionIcon.Tooltip = sStatusMessage
-    StatusActionIcon.Visible = True
-    ' true;
-    'give the app time to draw the eye-candy, even if its only for an instant
-    Wait
-Catch 'ex As Exception
-    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
-
-    Error.Propagate 'Throw
-
-End 'Sub
-
-''' <summary>
-''' Use when Marquee-style progress bar is not sufficient, and percentages must be indicated.
-''' WinForms.
-''' </summary>
-''' <param name="sStatusMessage"></param>
-''' <param name="errorMessage"></param>
-''' <param name="objImage"></param>
-''' <param name="isMarqueeProgressBarStyle"></param>
-''' <param name="iProgressBarValue"></param>
-Public Sub StartProgressBarWithPicture(sStatusMessage As String, sErrorMessage As String, objImage As Picture, isMarqueeProgressBarStyle As Boolean, iProgressBarValue As Integer)
-
-    StatusProgressBar.Pulse = isMarqueeProgressBarStyle
-    'set to blocks if actual percentage was used.
-    StatusProgressBar.Value = iProgressBarValue
-    'set to value if percentage used.
-    'if Style is not Marquee, then we are marking either a count or percentage
-    If iProgressBarValue > 1 Then 'StatusProgressBar.Maximum
-        'StatusProgressBar.Step = 1
-        StatusProgressBar.Value = 1
-    Endif
-
-    lblStatusMessage.Text = sStatusMessage
-    lblErrorMessage.Text = sErrorMessage
-    lblErrorMessage.ToolTip = sErrorMessage
-
-    StatusProgressBar.Visible = True
-
-    StatusActionIcon.Picture = objImage
-    StatusActionIcon.Tooltip = sStatusMessage
-    StatusActionIcon.Visible = True
-
-    'give the app time to draw the eye-candy, even if its only for an instant
-    Wait
-Catch 'ex As Exception
-    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
-
-    Error.Propagate 'Throw
-
-End 'Sub
-
-''' <summary>
-''' Update percentage changes.
-''' </summary>
-''' <param name="sStatusMessage"></param>
-''' <param name="iProgressBarValue"></param>
-Public Sub UpdateProgressBar(sStatusMessage As String, iProgressBarValue As Integer)
-    'Try
-
-    If Not IsNull(sStatusMessage) Then
-        lblStatusMessage.Text = sStatusMessage
-    Endif
-
-    'if Style is not Marquee, then we are marking either a count or percentage
-    'if we are simply counting, the progress bar will periodically need to adjust the Maximum.
-    If iProgressBarValue > 1 Then 'StatusProgressBar.Maximum
-        'StatusProgressBar.Maximum = StatusProgressBar.Maximum * 2
-        StatusProgressBar.Value = StatusProgressBar.Value / 2
-    Endif
-
-    StatusProgressBar.Value = iProgressBarValue
-
-    'give the app time to draw the eye-candy, even if its only for an instant
-    Wait
-Catch 'ex As Exception
-    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
-
-    Error.Propagate 'Throw
-
-End 'Sub
-
-''' <summary>
-''' Update message(s) only, without changing progress bar.
-''' Null parameter will leave a message unchanged;
-''' "" will clear it.
-''' Optional doEvents flag will determine if
-''' messages are processed before continuing.
-''' </summary>
-''' <param name="sStatusMessage"></param>
-''' <param name="errorMessage"></param>
-Public Sub UpdateStatusBarMessages(sStatusMessage As String, sErrorMessage As String)
-
-    If Not IsNull(sStatusMessage) Then
-        lblStatusMessage.Text = sStatusMessage
-    Endif
-    If Not IsNull(sErrorMessage) Then
-        lblErrorMessage.Text = sErrorMessage
-        lblErrorMessage.ToolTip = sErrorMessage
-    Endif
-
-    'give the app time to draw the eye-candy, even if its only for an instant
-    Wait 'Application.DoEvents();
-Catch 'ex As Exception
-    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
-
-    Error.Propagate 'Throw
-
-End 'Sub
-
-''' <summary>
-''' Stop progress bar and display messages.
-''' DoEvents will ensure messages are processed before continuing.
-''' </summary>
-''' <param name="sStatusMessage"></param>
-''' <param name="sErrorMessage">Null parameter will leave a message unchanged; "" will clear it.</param>
-Public Sub StopProgressBar(sStatusMessage As String, Optional sErrorMessage As String = Null)
-
-    lblStatusMessage.Text = sStatusMessage
-    'do not clear error at end of operation, clear it at start of operation
-    If sErrorMessage <> Null Then
-        'this.StatusBarErrorMessage.ToolTipText = errorMessage;
-        lblErrorMessage.Text = sErrorMessage
-    Endif
-
-    StatusProgressBar.Pulse = False
-    'reset back to marquee (default) in case actual percentage was used
-    'StatusProgressBar.Maximum = 100
-    'ditto
-    ' StatusProgressBar.Step = 10
-    'ditto
-    StatusProgressBar.Value = 0
-    'ditto
-    StatusProgressBar.Visible = False
-    'false;
-    StatusActionIcon.Visible = False
-    ' false;
-
-    StatusActionIcon.Image = Null
-    StatusActionIcon.Tooltip = Null
-
-    'give the app time to draw the eye-candy, even if its only for an instant
-    Wait 'Application.DoEvents();
-Catch 'ex As Exception
-    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
-
-    Error.Propagate 'Throw
+    $objStatusBarViewModel.StopProgressBar(Null, Error.Text)
 
 End 'Sub
 
