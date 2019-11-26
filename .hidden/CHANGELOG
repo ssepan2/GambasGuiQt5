@@ -1,3 +1,6 @@
+* Tue Nov 26 2019 Stephen Sepan <ssepanus@yahoo.com> 0.11.1
+- v0.11: swap docking / anchoring on GridView vs TextArea, so former expands; code grid with snapshot of Settings.
+
 * Mon Nov 25 2019 Stephen Sepan <ssepanus@yahoo.com> 0.10.1
 - v0.10: refactor status bar logic into separate lib.
 

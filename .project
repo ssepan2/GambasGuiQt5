@@ -1,7 +1,7 @@
 # Gambas Project File 3.0
 Title=Gambas Gui Qt5
 Startup=Main
-Version=0.10.1
+Version=0.11.1
 Component=gb.args
 Component=gb.image
 Component=gb.gui.qt
@@ -12,7 +12,7 @@ Library=:stephensepan/GambasAppUtilityLib:0.2
 Library=:stephensepan/DockAnchor:0.5
 Library=:stephensepan/GambasSomeModelLib:0.1
 Library=:stephensepan/GambasGuiAppUtilityLib:0.1
-Description="Template GUI (Qt5) with menu, toolbar, statusbar, and docking/anchoring. Majority of menu/button functions are not coded. Requires DockAnchor library 0.5 or later.  Requires GambasAppUtilityLib library 0.2 or later. Requires GambasSomeModelLib 0.1 or later. Requires GambasGuiAppUtilityLib library 0.1 or later. \nv0.10: refactor status bar logic into separate lib.\nv0.9: refactor SomeModel into separate lib share with all GUI apps; add missing Change event on SomeDateTime field.\nv0.8:expand SomeModel and reorganize form\nv0.7: switch to renamed GambasAppUtilityLib\nv0.6: switch to AppUtility for Log, Dialogs\nv0.5: fix Log.FormatError and calls\nv0.4: refactored to use Action objects to dispatch menu/button clicks.\nv0.3: updated to use DockAnchor library 0.3 and showcase docking or anchoring inside container controls\nv0.2: updated to use DockAnchor library 0.2 and showcase  docking stacked or sharing corners.\nv0.1: initial release with DockAnchor library 0.1 to showcase simple docking (on opposite sides) and anchoring."
+Description="Template GUI (Qt5) with menu, toolbar, statusbar, and docking/anchoring. Majority of menu/button functions are not coded. Requires DockAnchor library 0.5 or later.  Requires GambasAppUtilityLib library 0.2 or later. Requires GambasSomeModelLib 0.1 or later. Requires GambasGuiAppUtilityLib library 0.1 or later. \nv0.11: swap docking / anchoring on GridView vs TextArea, so former expands; code grid with snapshot of Settings.\nv0.10: refactor status bar logic into separate lib.\nv0.9: refactor SomeModel into separate lib share with all GUI apps; add missing Change event on SomeDateTime field.\nv0.8:expand SomeModel and reorganize form\nv0.7: switch to renamed GambasAppUtilityLib\nv0.6: switch to AppUtility for Log, Dialogs\nv0.5: fix Log.FormatError and calls\nv0.4: refactored to use Action objects to dispatch menu/button clicks.\nv0.3: updated to use DockAnchor library 0.3 and showcase docking or anchoring inside container controls\nv0.2: updated to use DockAnchor library 0.2 and showcase  docking stacked or sharing corners.\nv0.1: initial release with DockAnchor library 0.1 to showcase simple docking (on opposite sides) and anchoring."
 Authors="Stephen J Sepan"
 Arguments=[["f","file","some file param"]]
 CurrentArgument=0
@@ -26,7 +26,7 @@ Address=ssepanus@yahoo.com
 Url=https://www.linkedin.com/in/stephen-j-sepan-56284511/
 License=General Public License
 Prefix=1
-PackageName=sjsepan-gambasguiqt5-0.10.1
+PackageName=sjsepan-gambasguiqt5-0.11.1
 CreateEachDirectory=1
 Packager=1
 Systems=ubuntu

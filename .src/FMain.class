@@ -18,9 +18,9 @@ Private $objPanelTestAnchor As Anchor
 Private $objButtonCloseAnchor As Anchor
 
 'PanelGrid
-Private $objPanelGridTexAreaAnchor As Anchor
+Private $objPanelGridTexAreaDock As Dock
 
-Private $objPanelGridGridViewDock As Dock
+Private $objPanelGridGridViewAnchor As Anchor
 
 'PanelStatusBar
 Private $objPanelStatusBarStatusMessage As Anchor
@@ -59,8 +59,6 @@ Public Sub $objModel_PropertyChanged(propertyName As String)
         Case "SomeBoolean"
             SomeBooleanCheckBox.Value = $objModel.SomeBoolean
             ' Debug Subst("&1: &2", propertyName, $objModel.SomeBoolean)
-            'StatusDirtyIcon.Visible = $objModel.Dirty'TODO:bug? Delete?
-            ' Debug Subst("&1: &2", propertyName, $objModel.Dirty)
         Case "SomeDateTime"
             SomeDateTimeValueBox.value = $objModel.SomeDateTime
             ' Debug Subst("&1: &2", propertyName, $objModel.SomeDateTime)
@@ -167,8 +165,8 @@ Public Sub Form_Open()
     $objPanelTestAnchor = New Anchor(PanelTest, True, Anchor.AnchorLeft + Anchor.AnchorRight + Anchor.AnchorTop + Anchor.AnchorBottom)
 
     'PanelGrid
-    $objPanelGridTexAreaAnchor = New Anchor(TextArea1, False, Anchor.AnchorTop + Anchor.AnchorLeft + Anchor.AnchorBottom + Anchor.AnchorRight)
-    $objPanelGridGridViewDock = New Dock(GridView1, False, Dock.DockBottom)
+    $objPanelGridTexAreaDock = New Dock(TextArea1, False, Dock.DockTop)
+    $objPanelGridGridViewAnchor = New Anchor(GridView1, False, Anchor.AnchorTop + Anchor.AnchorRight + Anchor.AnchorBottom + Anchor.AnchorLeft)
 
     'PanelStatusbar
     $objPanelStatusBarStatusMessage = New Anchor(lblStatusMessage, False, Anchor.AnchorLeft + Anchor.AnchorTop + Anchor.AnchorRight)
@@ -181,7 +179,8 @@ Public Sub Form_Open()
 
     FileNew
 
-    ' LoadSettingsGrid
+    InitSettingsGrid
+    LoadSettingsGrid
 
     Wait 1
 Catch
@@ -202,8 +201,8 @@ Public Sub Form_Close()
     $objPanelStatusBarStatusMessage = Null
 
     'PanelGrid
-    $objPanelGridGridViewDock = Null
-    $objPanelGridTexAreaAnchor = Null
+    $objPanelGridGridViewAnchor = Null
+    $objPanelGridTexAreaDock = Null
 
     'Form
     $objButtonCloseAnchor = Null
@@ -247,8 +246,8 @@ Public Sub Form_Resize()
     $objButtonCloseAnchor.Apply
 
     'PanelGrid
-    $objPanelGridTexAreaAnchor.Apply
-    $objPanelGridGridViewDock.Apply
+    $objPanelGridTexAreaDock.Apply
+    $objPanelGridGridViewAnchor.Apply
 
     'Note: run Apply for Container children here
 
@@ -475,6 +474,7 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
         'SAVE
         $objModel.SaveToSettings(Settings) 'TODO:if saveas, read and if already present, prompt to replace
         sStatusMessage = "Saved '" & $objModel.Key & "'."
+        LoadSettingsGrid
     Endif
 
 Finally
@@ -968,28 +968,33 @@ Catch 'ex As Exception
 
 End 'Sub
 
-' Private Sub LoadSettingsGrid()
-'
-'     Dim sSlot, sKey As String
-'     Dim iCurrentRow As Integer = 0
-'
-'     GridView1.AddColumn("Slot", -1, Align.Left)
-'     GridView1.AddColumn("Key", -1, Align.Left)
-'     GridView1.AddColumn("Value", -1, Align.Normal)
-'     GridView1.Header = GridView.Both
-'     For Each sSlot In Settings.Keys
-'         For Each sKey In Settings.Keys[sSlot]
-'             Print Subst("&1/&2", sSlot, sKey)
-'             GridView1.Rows.Insert(iCurrentRow)
-'             GridView1[iCurrentRow, 0].Text = sSlot
-'             GridView1[iCurrentRow, 1].Text = sKey
-'             GridView1[iCurrentRow, 2].Text = Settings[Subst("&1/&2", sSlot, sKey), ""]
-'
-'             iCurrentRow += 1
-'         Next
-'     Next
-'
-' End
+Private Sub InitSettingsGrid()
+
+    GridView1.AddColumn("Slot", -1, Align.Left)
+    GridView1.AddColumn("Key", -1, Align.Left)
+    GridView1.AddColumn("Value", -1, Align.Normal)
+    GridView1.Header = GridView.Both
+
+End
+
+Private Sub LoadSettingsGrid()
+
+    Dim sSlot, sKey As String
+    Dim iCurrentRow As Integer = 0
+
+    For Each sSlot In Settings.Keys
+        For Each sKey In Settings.Keys[sSlot]
+            ' Print Subst("&1/&2", sSlot, sKey)
+            GridView1.Rows.Insert(iCurrentRow)
+            GridView1[iCurrentRow, 0].Text = sSlot
+            GridView1[iCurrentRow, 1].Text = sKey
+            GridView1[iCurrentRow, 2].Text = Settings[Subst("&1/&2", sSlot, sKey), ""]
+
+            iCurrentRow += 1
+        Next
+    Next
+
+End
 
 ' #End Region
 
