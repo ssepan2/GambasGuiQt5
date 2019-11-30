@@ -1,5 +1,8 @@
 ' Gambas class file
 
+' Constants
+Private Const APP_TITLE_FORMAT As String = "&1 - Gambas GUI Qt5"
+
 ' #Region "Declarations"
 Private $objStatusBarViewModel As StatusBarViewModel
 
@@ -49,7 +52,9 @@ Public Sub $objModel_PropertyChanged(propertyName As String)
     'TODO:consider using Object.Lock(controlname)/Object.Unlock(controlname)
     Select propertyName
         Case "Key"
-            'do nothing
+            '(usually)do nothing unless Key can be directly edited
+            Me.Title = Subst(APP_TITLE_FORMAT, $objModel.Key)
+            ' Debug Subst("&1: &2", propertyName, $objModel.Key)
         Case "SomeString"
             SomeStringTextBox.text = $objModel.SomeString
             ' Debug Subst("&1: &2", propertyName, $objModel.SomeString)
@@ -357,8 +362,8 @@ Public Sub FileNew()
     Else
         'NEW
         $objModel = New SomeModel(Me, "$objModel")
+        $objModel.RefreshModel 'to update view
 
-        $objModel.RefreshModel
         $objStatusBarViewModel.StopProgressBar("New completed")
         sStatusMessage = "New completed"
     Endif
@@ -408,7 +413,11 @@ Public Sub FileOpen()
     Else
         response = InputBox("Enter Name for model:", "Open...", Null)
         If Not IsNull(response) Then
-            $objModel.Key = response
+            If Not SomeModel.VerifyKey(Settings, response) Then
+                Error.Raise(Subst("ID not found in settings: Slot ='&1'", response))
+            Else
+                $objModel.Key = response
+            Endif
         Else
             bCancel = True
         Endif
@@ -417,13 +426,14 @@ Public Sub FileOpen()
             sStatusMessage = "Open cancelled during model name input."
         Else
             'OPEN
-            If $objModel.OpenFromSettings(Settings) Then
+            If $objModel.OpenFromSettings($objModel, Settings, response) Then
 
                 sStatusMessage = "Opened '" & response & "'."
             Else
                 'clear model on failure; NEW
                 $objModel = New SomeModel(Me, "$objModel")
                 $objModel.RefreshModel
+
                 Error.Raise("Unable to Open: '" & response & "'")
             Endif
         Endif
@@ -459,7 +469,7 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
         Action["FileSave"].Enabled = False
     Endif
 
-    If IsNull($objModel.Key) Or bSaveAs Then
+    If IsNull($objModel.Key) Or If ($objModel.Key = ModelBase.KEY_NEW) Or If bSaveAs Then
         response = InputBox("Enter Name for model:", "Save As...", Null)
         If Not IsNull(response) Then
             $objModel.Key = response
@@ -784,11 +794,13 @@ Public Sub EditRefresh()
     $objStatusBarViewModel.StartProgressBarWithPicture("Refresh...", Null, Action["EditRefresh"].Picture, True, 33)
     Action["EditRefresh"].Enabled = False
 
-    If Something() Then 'TODO:refresh
-        sStatusMessage = "Refresh done."
-    Else
-        sStatusMessage = "Refresh cancelled."
-    Endif
+    $objModel.RefreshModel
+    sStatusMessage = "Refresh done."
+    ' If Something() Then 'TODO:refresh
+    '     sStatusMessage = "Refresh done."
+    ' Else
+    '     sStatusMessage = "Refresh cancelled."
+    ' Endif
 Finally
     Action["EditRefresh"].Enabled = True
     $objStatusBarViewModel.StopProgressBar(sStatusMessage)
@@ -1008,10 +1020,10 @@ Private Sub SaveFormToSettings()
         Error.Raise("SaveFormToSettings: key is null")
     Endif
 
-    Settings[sKey & "/Top "] = Me.Top
-    Settings[sKey & "/Left "] = Me.Left
-    Settings[sKey & "/Height "] = Me.Height
-    Settings[sKey & "/Width "] = Me.Width
+    Settings[sKey & "/Top"] = Me.Top
+    Settings[sKey & "/Left"] = Me.Left
+    Settings[sKey & "/Height"] = Me.Height
+    Settings[sKey & "/Width"] = Me.Width
     ' Settings.Save'done automatically?
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
