@@ -364,8 +364,8 @@ Public Sub FileNew()
         $objModel = New SomeModel(Me, "$objModel")
         $objModel.RefreshModel 'to update view
 
-        $objStatusBarViewModel.StopProgressBar("New completed")
         sStatusMessage = "New completed"
+        ' $objStatusBarViewModel.StopProgressBar(sStatusMessage)
     Endif
 Finally
     Action["FileNew"].Enabled = True
@@ -426,14 +426,14 @@ Public Sub FileOpen()
             sStatusMessage = "Open cancelled during model name input."
         Else
             'OPEN
-            If $objModel.OpenFromSettings($objModel, Settings, response) Then
+            If SomeModel.OpenFromSettings($objModel, Settings, response) Then
 
                 sStatusMessage = "Opened '" & response & "'."
             Else
-                'clear model on failure; NEW
+                'clear model on failure;
+                ' NEW
                 $objModel = New SomeModel(Me, "$objModel")
                 $objModel.RefreshModel
-
                 Error.Raise("Unable to Open: '" & response & "'")
             Endif
         Endif
