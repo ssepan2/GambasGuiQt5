@@ -7,19 +7,19 @@ Public Function Main() As Integer
     Dim bF As Boolean
 
     Args.Begin(Application.Name & " <option>")
-    bF = Args.Has("f", "file", "some file param")
+    bF = Args.Has("f", "file", ("some file param"))
     Args.End
 
     If bF Then
-        Print "f param used"
+        Print ("f param used")
     Endif
 
-    Print "Starting FMain..."
+    Print ("Starting FMain...")
 
     frmMainForm = New FMain(Null)
     iResult = frmMainForm.ShowModal()
 
-    Print Subst("FMain: &1", iResult)
+    Print Subst(("FMain: result='&1'"), iResult)
 
     Return iResult
 Catch

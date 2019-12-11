@@ -1,7 +1,7 @@
 ' Gambas class file
 
 ' Constants
-Private Const APP_TITLE_FORMAT As String = "&1 - Gambas GUI Qt5"
+Private Const APP_TITLE_FORMAT As String = ("&1 - Gambas GUI Qt5")
 
 ' #Region "Declarations"
 Private $objStatusBarViewModel As StatusBarViewModel
@@ -54,27 +54,27 @@ Public Sub $objModel_PropertyChanged(propertyName As String)
         Case "Key"
             '(usually)do nothing unless Key can be directly edited
             Me.Title = Subst(APP_TITLE_FORMAT, $objModel.Key)
-            ' Debug Subst("&1: &2", propertyName, $objModel.Key)
+            ' Debug Subst(("&1: &2"), propertyName, $objModel.Key)
         Case "SomeString"
             SomeStringTextBox.text = $objModel.SomeString
-            ' Debug Subst("&1: &2", propertyName, $objModel.SomeString)
+            ' Debug Subst(("&1: &2"), propertyName, $objModel.SomeString)
         Case "SomeInteger"
             SomeIntegerValueBox.value = $objModel.SomeInteger
-            ' Debug Subst("&1: &2", propertyName, $objModel.SomeInteger)
+            ' Debug Subst(("&1: &2"), propertyName, $objModel.SomeInteger)
         Case "SomeBoolean"
             SomeBooleanCheckBox.Value = $objModel.SomeBoolean
-            ' Debug Subst("&1: &2", propertyName, $objModel.SomeBoolean)
+            ' Debug Subst(("&1: &2"), propertyName, $objModel.SomeBoolean)
         Case "SomeDateTime"
             SomeDateTimeValueBox.value = $objModel.SomeDateTime
-            ' Debug Subst("&1: &2", propertyName, $objModel.SomeDateTime)
+            ' Debug Subst(("&1: &2"), propertyName, $objModel.SomeDateTime)
         Case "Dirty"
             ' StatusDirtyIcon.Visible = $objModel.Dirty 'use wrapper sub in viewmodel
             $objStatusBarViewModel.SetDirtyIndicator($objModel.Dirty)
-            ' Debug Subst("&1: &2", propertyName, $objModel.Dirty)
+            ' Debug Subst(("&1: &2"), propertyName, $objModel.Dirty)
         Case Else
-            Debug "unhandled event:" & propertyName
+            Debug Subst(("unhandled event: &1"), propertyName)
     End Select
-    ' Debug Subst("PropertyChanged handled: &1", propertyName)
+    ' Debug Subst(("PropertyChanged handled: &1"), propertyName)
 Finally
     $bStopControlEvents = False
 Catch
@@ -145,7 +145,7 @@ Public Function Action_Activate(sActionName As String) As Boolean
         Case "HelpAbout"
             HelpAbout
         Case Else
-            Print Subst("Action_Activate: &1", sActionName)
+            Print Subst(("Action_Activate: &1"), sActionName)
     End Select
     Return False
 
@@ -336,7 +336,7 @@ Public Sub FileNew()
     If Not IsNull($objModel) Then
         If $objModel.Dirty Then
             'prompt before saving
-            Select Case Message.Question("Save changes?:" & $objModel.Key, "&Yes", "&No", "&Cancel")
+            Select Case Message.Question(Subst(("Save changes?: &1"), $objModel.Key), ("&Yes"), ("&No"), ("&Cancel"))
                 Case 1
                     'Yes, SAVE
                     FileSave
@@ -351,20 +351,17 @@ Public Sub FileNew()
         Endif
     Endif
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("New...", Null, Action["FileNew"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("New..."), Null, Action["FileNew"].Picture, True, 33)
     Action["FileNew"].Enabled = False
 
     If bCancel Then
-        sStatusMessage = "New cancelled."
+        sStatusMessage = ("New cancelled.")
     Else
         'NEW
         $objModel = New SomeModel(Me, "$objModel")
         $objModel.RefreshModel 'to update view
 
-        sStatusMessage = "New completed"
+        sStatusMessage = ("New completed.")
         ' $objStatusBarViewModel.StopProgressBar(sStatusMessage)
     Endif
 Finally
@@ -387,7 +384,7 @@ Public Sub FileOpen()
     If Not IsNull($objModel) Then
         If $objModel.Dirty Then
             'prompt before saving
-            Select Case Message.Question("Save changes?:" & $objModel.Key, "&Yes", "&No", "&Cancel")
+            Select Case Message.Question(Subst(("Save changes?: &1"), $objModel.Key), ("&Yes"), ("&No"), ("&Cancel"))
                 Case 1
                     'Yes, SAVE
                     FileSave(True)
@@ -402,19 +399,16 @@ Public Sub FileOpen()
         Endif
     Endif
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Opening...", Null, Action["FileOpen"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Opening..."), Null, Action["FileOpen"].Picture, True, 33)
     Action["FileOpen"].Enabled = False
 
     If bCancel Then
-        sStatusMessage = "Open cancelled during Save."
+        sStatusMessage = ("Open cancelled during Save.")
     Else
-        response = InputBox("Enter Name for model:", "Open...", Null)
+        response = InputBox(("Enter Name for model:"), ("Open..."), Null)
         If Not IsNull(response) Then
             If Not SomeModel.VerifyKey(Settings, response) Then
-                Error.Raise(Subst("ID not found in settings: Slot ='&1'", response))
+                Error.Raise(Subst(("ID not found in settings: Slot ='&1'"), response))
             Else
                 $objModel.Key = response
             Endif
@@ -423,18 +417,18 @@ Public Sub FileOpen()
         Endif
 
         If bCancel Then
-            sStatusMessage = "Open cancelled during model name input."
+            sStatusMessage = ("Open cancelled during model name input.")
         Else
             'OPEN
             If SomeModel.OpenFromSettings($objModel, Settings, response) Then
 
-                sStatusMessage = "Opened '" & response & "'."
+                sStatusMessage = Subst(("Opened '&1'."), response)
             Else
                 'clear model on failure;
                 ' NEW
                 $objModel = New SomeModel(Me, "$objModel")
                 $objModel.RefreshModel
-                Error.Raise("Unable to Open: '" & response & "'")
+                Error.Raise(Subst(("Unable to Open: '&1'"), response))
             Endif
         Endif
     Endif
@@ -458,19 +452,16 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
     Dim response As String = Null
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
     If bSaveAs Then
-        $objStatusBarViewModel.StartProgressBarWithPicture("Saving As...", Null, Action["FileSaveAs"].Picture, True, 33)
+        $objStatusBarViewModel.StartProgressBarWithPicture(("Saving As..."), Null, Action["FileSaveAs"].Picture, True, 33)
         Action["FileSaveAs"].Enabled = False
     Else
-        $objStatusBarViewModel.StartProgressBarWithPicture("Saving...", Null, Action["FileSave"].Picture, True, 33)
+        $objStatusBarViewModel.StartProgressBarWithPicture(("Saving..."), Null, Action["FileSave"].Picture, True, 33)
         Action["FileSave"].Enabled = False
     Endif
 
     If IsNull($objModel.Key) Or If ($objModel.Key = ModelBase.KEY_NEW) Or If bSaveAs Then
-        response = InputBox("Enter Name for model:", "Save As...", Null)
+        response = InputBox(("Enter Name for model:"), ("Save As..."), Null)
         If Not IsNull(response) Then
             $objModel.Key = response
         Else
@@ -479,11 +470,11 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
     Endif
 
     If bCancel Then
-        sStatusMessage = "Save cancelled during model name input."
+        sStatusMessage = ("Save cancelled during model name input.")
     Else
         'SAVE
         $objModel.SaveToSettings(Settings) 'TODO:if saveas, read and if already present, prompt to replace
-        sStatusMessage = "Saved '" & $objModel.Key & "'."
+        sStatusMessage = Subst(("Saved '&1'."), $objModel.Key)
         LoadSettingsGrid
     Endif
 
@@ -511,16 +502,13 @@ Public Sub FilePrint()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Printing...", Null, Action["FilePrint"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Printing..."), Null, Action["FilePrint"].Picture, True, 33)
     Action["FilePrint"].Enabled = False
 
     If Something() Then 'TODO:print
-        sStatusMessage = "Printed."
+        sStatusMessage = ("Printed.")
     Else
-        sStatusMessage = "Print cancelled."
+        sStatusMessage = ("Print cancelled.")
     Endif
 Finally
     Action["FilePrint"].Enabled = True
@@ -528,19 +516,16 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Print failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Print failed: '&1'"), Error.Text))
 
 End 'Sub
 
 Public Sub FileExit()
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
     If Not IsNull($objModel) Then
         If $objModel.Dirty Then
             'prompt before saving
-            Select Case Message.Question("Save changes?", "&Yes", "&No")
+            Select Case Message.Question(("Save changes?"), ("&Yes"), ("&No"))
                 Case 1
                     'Yes, SAVE
                     FileSave
@@ -563,16 +548,13 @@ Public Sub EditUndo()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Undo...", Null, Action["EditUndo"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Undo..."), Null, Action["EditUndo"].Picture, True, 33)
     Action["EditUndo"].Enabled = False
 
     If Something() Then 'TODO:undo
-        sStatusMessage = "Undo done."
+        sStatusMessage = ("Undo done.")
     Else
-        sStatusMessage = "Undo cancelled."
+        sStatusMessage = ("Undo cancelled.")
     Endif
 Finally
     Action["EditUndo"].Enabled = True
@@ -580,7 +562,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Undo failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Undo failed: '&1'"), Error.Text))
 
 End
 
@@ -588,16 +570,13 @@ Public Sub EditRedo()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Redo...", Null, Action["EditRedo"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Redo..."), Null, Action["EditRedo"].Picture, True, 33)
     Action["EditRedo"].Enabled = False
 
     If Something() Then 'TODO: redo
-        sStatusMessage = "Redo done."
+        sStatusMessage = ("Redo done.")
     Else
-        sStatusMessage = "Redo cancelled."
+        sStatusMessage = ("Redo cancelled.")
     Endif
 Finally
     Action["EditRedo"].Enabled = True
@@ -605,7 +584,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Redo failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Redo failed: '&1'"), Error.Text))
 
 End
 
@@ -613,16 +592,13 @@ Public Sub EditSelectAll()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Select All...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Select All..."), Null, Null, True, 33)
     Action["EditSelectAll"].Enabled = False
 
     If Something() Then 'TODO: SelectAll
-        sStatusMessage = "Select All done."
+        sStatusMessage = ("Select All done.")
     Else
-        sStatusMessage = "Select All cancelled."
+        sStatusMessage = ("Select All cancelled.")
     Endif
 Finally
     Action["EditSelectAll"].Enabled = True
@@ -630,7 +606,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Select All failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Select All failed: '&1'"), Error.Text))
 
 End
 
@@ -638,16 +614,13 @@ Public Sub EditCut()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Cut...", Null, Action["EditCut"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Cut..."), Null, Action["EditCut"].Picture, True, 33)
     Action["EditCut"].Enabled = False
 
     If Something() Then 'TODO:cut
-        sStatusMessage = "Cut done."
+        sStatusMessage = ("Cut done.")
     Else
-        sStatusMessage = "Cut cancelled."
+        sStatusMessage = ("Cut cancelled.")
     Endif
 Finally
     Action["EditCut"].Enabled = True
@@ -655,7 +628,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Cut failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Cut failed: '&1'"), Error.Text))
 
 End
 
@@ -663,24 +636,21 @@ Public Sub EditCopy()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Copying...", Null, Action["EditCopy"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Copying..."), Null, Action["EditCopy"].Picture, True, 33)
     Action["EditCopy"].Enabled = False
 
     If Something() Then 'TODO:copy
-        sStatusMessage = "Copy done."
+        sStatusMessage = ("Copy done.")
     Else
-        sStatusMessage = "Copy cancelled."
+        sStatusMessage = ("Copy cancelled.")
     Endif
 Finally
     Action["EditCopy"].Enabled = True
-    $objStatusBarViewModel.StopProgressBar("Copied.")
+    $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Copy failed: " & Error.Text & "")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Copy failed: '&1'"), Error.Text))
 
 End 'Sub
 
@@ -688,16 +658,13 @@ Public Sub EditPaste()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Paste...", Null, Action["EditPaste"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Paste..."), Null, Action["EditPaste"].Picture, True, 33)
     Action["EditPaste"].Enabled = False
 
     If Something() Then 'TODO:paste
-        sStatusMessage = "Paste done."
+        sStatusMessage = ("Paste done.")
     Else
-        sStatusMessage = "Paste cancelled."
+        sStatusMessage = ("Paste cancelled.")
     Endif
 Finally
     Action["EditPaste"].Enabled = True
@@ -705,7 +672,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Paste failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Paste failed: '&1'"), Error.Text))
 
 End
 
@@ -713,16 +680,13 @@ Public Sub EditDelete()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Delete...", Null, Action["EditDelete"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Delete..."), Null, Action["EditDelete"].Picture, True, 33)
     Action["EditDelete"].Enabled = False
 
     If Something() Then 'TODO:delete
-        sStatusMessage = "Delete done."
+        sStatusMessage = ("Delete done.")
     Else
-        sStatusMessage = "Delete cancelled."
+        sStatusMessage = ("Delete cancelled.")
     Endif
 Finally
     Action["EditDelete"].Enabled = True
@@ -730,7 +694,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Delete failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Delete failed: '&1'"), Error.Text))
 
 End
 
@@ -738,16 +702,13 @@ Public Sub EditFind()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Find...", Null, Action["EditFind"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Find..."), Null, Action["EditFind"].Picture, True, 33)
     Action["EditFind"].Enabled = False
 
     If Something() Then 'TODO:find
-        sStatusMessage = "Find done."
+        sStatusMessage = ("Find done.")
     Else
-        sStatusMessage = "Find cancelled."
+        sStatusMessage = ("Find cancelled.")
     Endif
 Finally
     Action["EditFind"].Enabled = True
@@ -755,7 +716,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Find failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Find failed: '&1'"), Error.Text))
 
 End
 
@@ -763,16 +724,13 @@ Public Sub EditReplace()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Replace...", Null, Action["EditReplace"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Replace..."), Null, Action["EditReplace"].Picture, True, 33)
     Action["EditReplace"].Enabled = False
 
     If Something() Then 'TODO:Replace
-        sStatusMessage = "Replace done."
+        sStatusMessage = ("Replace done.")
     Else
-        sStatusMessage = "Replace cancelled."
+        sStatusMessage = ("Replace cancelled.")
     Endif
 Finally
     Action["EditReplace"].Enabled = True
@@ -780,7 +738,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Replace failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Replace failed: '&1'"), Error.Text))
 
 End
 
@@ -788,26 +746,18 @@ Public Sub EditRefresh()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Refresh...", Null, Action["EditRefresh"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Refresh..."), Null, Action["EditRefresh"].Picture, True, 33)
     Action["EditRefresh"].Enabled = False
 
     $objModel.RefreshModel
     sStatusMessage = "Refresh done."
-    ' If Something() Then 'TODO:refresh
-    '     sStatusMessage = "Refresh done."
-    ' Else
-    '     sStatusMessage = "Refresh cancelled."
-    ' Endif
 Finally
     Action["EditRefresh"].Enabled = True
     $objStatusBarViewModel.StopProgressBar(sStatusMessage)
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Refresh failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Refresh failed: '&1'"), Error.Text))
 
 End
 
@@ -815,16 +765,13 @@ Public Sub EditPreferences()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Preferences...", Null, Action["EditPreferences"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Preferences..."), Null, Action["EditPreferences"].Picture, True, 33)
     Action["EditPreferences"].Enabled = False
 
     If Something() Then 'TODO:Preferences
-        sStatusMessage = "Preferences done."
+        sStatusMessage = ("Preferences done.")
     Else
-        sStatusMessage = "Preferences cancelled."
+        sStatusMessage = ("Preferences cancelled.")
     Endif
 Finally
     Action["EditPreferences"].Enabled = True
@@ -832,7 +779,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Preferences failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Preferences failed: '&1'"), Error.Text))
 
 End 'Sub
 
@@ -840,16 +787,13 @@ Public Sub HelpContents()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Contents...", Null, Action["HelpContents"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Contents..."), Null, Action["HelpContents"].Picture, True, 33)
     Action["HelpContents"].Enabled = False
 
     If Something() Then 'TODO:Contents
-        sStatusMessage = "Contents done."
+        sStatusMessage = ("Contents done.")
     Else
-        sStatusMessage = "Contents cancelled."
+        sStatusMessage = ("Contents cancelled.")
     Endif
 Finally
     Action["HelpContents"].Enabled = True
@@ -857,7 +801,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Contents failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Contents failed: '&1'"), Error.Text))
 
 End
 
@@ -865,16 +809,13 @@ Public Sub HelpIndex()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Index...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Index..."), Null, Null, True, 33)
     Action["HelpIndex"].Enabled = False
 
     If Something() Then 'TODO:Index
-        sStatusMessage = "Index done."
+        sStatusMessage = ("Index done.")
     Else
-        sStatusMessage = "Index cancelled."
+        sStatusMessage = ("Index cancelled.")
     Endif
 Finally
     Action["HelpIndex"].Enabled = True
@@ -882,7 +823,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Index failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Index failed: '&1'"), Error.Text))
 
 End
 
@@ -890,16 +831,13 @@ Public Sub HelpOnlineHelp()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Online Help...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Online Help..."), Null, Null, True, 33)
     Action["HelpOnlineHelp"].Enabled = False
 
     If Something() Then 'TODO:OnlineHelp
-        sStatusMessage = "Online Help done."
+        sStatusMessage = ("Online Help done.")
     Else
-        sStatusMessage = "Online Help cancelled."
+        sStatusMessage = ("Online Help cancelled.")
     Endif
 Finally
     Action["HelpOnlineHelp"].Enabled = True
@@ -907,7 +845,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Online Help failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Online Help failed: '&1'"), Error.Text))
 
 End
 
@@ -915,16 +853,13 @@ Public Sub HelpLicenceInformation()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Licence Information...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Licence Information..."), Null, Null, True, 33)
     Action["HelpLicenceInformation"].Enabled = False
 
     If Something() Then 'TODO:LicenceInformation
-        sStatusMessage = "Licence Information done."
+        sStatusMessage = ("Licence Information done.")
     Else
-        sStatusMessage = "Licence Information cancelled."
+        sStatusMessage = ("Licence Information cancelled.")
     Endif
 Finally
     Action["HelpLicenceInformation"].Enabled = True
@@ -932,7 +867,7 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Licence Information failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Licence Information failed: '&1'"), Error.Text))
 
 End
 
@@ -940,16 +875,13 @@ Public Sub HelpCheckForUpdates()
 
     Dim sStatusMessage As String
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("Check For Updates...", Null, Null, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Check For Updates..."), Null, Null, True, 33)
     Action["HelpCheckForUpdates"].Enabled = False
 
     If Something() Then 'TODO:CheckForUpdates
-        sStatusMessage = "Check For Updates done."
+        sStatusMessage = ("Check For Updates done.")
     Else
-        sStatusMessage = "Check For Updates cancelled."
+        sStatusMessage = ("Check For Updates cancelled.")
     Endif
 Finally
     Action["HelpCheckForUpdates"].Enabled = True
@@ -957,22 +889,19 @@ Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
-    $objStatusBarViewModel.StopProgressBar(Null, "Check For Updates failed: '" & Error.Text & "'")
+    $objStatusBarViewModel.StopProgressBar(Null, Subst(("Check For Updates failed: '&1'"), Error.Text))
 
 End
 
 Public Sub HelpAbout()
 
-    lblStatusMessage.Text = ""
-    lblErrorMessage.Text = ""
-
-    $objStatusBarViewModel.StartProgressBarWithPicture("About...", Null, Action["HelpAbout"].Picture, True, 33)
+    $objStatusBarViewModel.StartProgressBarWithPicture(("About..."), Null, Action["HelpAbout"].Picture, True, 33)
     Action["HelpAbout"].Enabled = False
 
     Message(Dialogs.FormatAbout())
 Finally
     Action["HelpAbout"].Enabled = True
-    $objStatusBarViewModel.StopProgressBar("About completed.")
+    $objStatusBarViewModel.StopProgressBar(("About completed."))
 Catch 'ex As Exception
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
@@ -982,10 +911,10 @@ End 'Sub
 
 Private Sub InitSettingsGrid()
 
-    GridView1.AddColumn("Slot", -1, Align.Left)
-    GridView1.AddColumn("Key", -1, Align.Left)
-    GridView1.AddColumn("Value", -1, Align.Normal)
     GridView1.Header = GridView.Both
+    GridView1.AddColumn("Slot", -1, Align.Normal)
+    GridView1.AddColumn("Key", -1, Align.Normal)
+    GridView1.AddColumn("Value", -1, Align.Normal)
 
 End
 
@@ -993,6 +922,7 @@ Private Sub LoadSettingsGrid()
 
     Dim sSlot, sKey As String
     Dim iCurrentRow As Integer = 0
+    ' Dim objGridViewRow As _GridView_Row
 
     For Each sSlot In Settings.Keys
         For Each sKey In Settings.Keys[sSlot]
@@ -1000,7 +930,14 @@ Private Sub LoadSettingsGrid()
             GridView1.Rows.Insert(iCurrentRow)
             GridView1[iCurrentRow, 0].Text = sSlot
             GridView1[iCurrentRow, 1].Text = sKey
-            GridView1[iCurrentRow, 2].Text = Settings[Subst("&1/&2", sSlot, sKey), ""]
+            GridView1[iCurrentRow, 2].Text = Settings[Subst(("&1/&2"), sSlot, sKey), ""]
+            ' If (iCurrentRow % 2) = 0 Then
+            '     objGridViewRow = GridView.Rows[iCurrentRow]
+            '     objGridViewRow.TextAlignment = Align.Left
+            ' Else
+            '     objGridViewRow = GridView.Rows[iCurrentRow]
+            '     objGridViewRow.TextAlignment = Align.Right
+            ' Endif
 
             iCurrentRow += 1
         Next
@@ -1017,14 +954,14 @@ Private Sub SaveFormToSettings()
     sKey = Me.Name '"FMain"
 
     If IsNull(Me.key) Then
-        Error.Raise("SaveFormToSettings: key is null")
+        Error.Raise(("SaveFormToSettings: key is null"))
     Endif
 
     Settings[sKey & "/Top"] = Me.Top
     Settings[sKey & "/Left"] = Me.Left
     Settings[sKey & "/Height"] = Me.Height
     Settings[sKey & "/Width"] = Me.Width
-    ' Settings.Save'done automatically?
+    Settings.Save 'done automatically?
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
@@ -1039,35 +976,35 @@ Private Function OpenFormFromSettings() As Boolean
     sKey = Me.Name '"FMain"
 
     If IsNull(Me.key) Then
-        Error.Raise("OpenFormFromSettings: key is null")
+        Error.Raise(("OpenFormFromSettings: key is null"))
     Endif
 
     'need to use default (design) values after failure, in case an error during opening leaves data in inconsistent state
 
     readValue = Settings[sKey & "/Top", Me.Top]
     If IsNull(readValue) Then
-        Error.Raise(Subst("Error opening key='&1', Top=Null", sKey))
+        Error.Raise(Subst(("Error opening key='&1', Top=Null"), sKey))
     Else
         Me.Top = readValue
     Endif
 
     readValue = Settings[sKey & "/Left", Me.Left]
     If IsNull(readValue) Then
-        Error.Raise(Subst("Error opening key='&1', Left=Null", sKey))
+        Error.Raise(Subst(("Error opening key='&1', Left=Null"), sKey))
     Else
         Me.Left = readValue
     Endif
 
     readValue = Settings[sKey & "/Height", Me.Height]
     If IsNull(readValue) Then
-        Error.Raise(Subst("Error opening key='&1', Height=Null", sKey))
+        Error.Raise(Subst(("Error opening key='&1', Height=Null"), sKey))
     Else
         Me.Height = readValue
     Endif
 
     readValue = Settings[sKey & "/Width", Me.Width]
     If IsNull(readValue) Then
-        Error.Raise(Subst("Error opening key='&1', Width=Null", sKey))
+        Error.Raise(Subst(("Error opening key='&1', Width=Null"), sKey))
     Else
         Me.Width = readValue
     Endif
@@ -1077,7 +1014,7 @@ Private Function OpenFormFromSettings() As Boolean
 Finally
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
-    Debug "Key: " & sKey
+    Debug Subst(("Key: '&1'"), sKey)
     Return returnValue
 
 End

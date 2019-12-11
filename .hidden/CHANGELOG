@@ -1,3 +1,6 @@
+* Wed Dec 11 2019 Stephen Sepan <ssepanus@yahoo.com> 0.14.3
+- v0.14: perform internationalization check of all strings in code
+
 * Sat Nov 30 2019 Stephen Sepan <ssepanus@yahoo.com> 0.12.2
 - v0.12: fix settings key name save; add updating of form title;
 
