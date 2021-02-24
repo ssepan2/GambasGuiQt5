@@ -328,10 +328,9 @@ Private Function Something() As Boolean
 
 End
 
-Public Sub FileNew()
+Private Function CheckForSaveOrCancel() As Boolean
 
-    Dim bCancel As Boolean = False
-    Dim sStatusMessage As String
+    Dim bCancel As Boolean
 
     If Not IsNull($objModel) Then
         If $objModel.Dirty Then
@@ -339,17 +338,32 @@ Public Sub FileNew()
             Select Case Message.Question(Subst(("Save changes?: &1"), $objModel.Key), ("&Yes"), ("&No"), ("&Cancel"))
                 Case 1
                     'Yes, SAVE
-                    FileSave
+                    FileSave(True)
                 Case 2
-                    'No, skip Save and continue to do New
+                    'No, skip Save, continue to do Action
                 Case 3
-                    'Cancel, skip Save and New
+                    'Cancel, skip Save, skip New
                     bCancel = True
                 Case Else
+                    bCancel = True
                     Error.Raise("InvalidEnumArgumentException")
             End Select
         Endif
     Endif
+Finally
+    Return bCancel
+Catch
+    bCancel = True
+    Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
+
+End 'Function
+
+Public Sub FileNew()
+
+    Dim bCancel As Boolean = False
+    Dim sStatusMessage As String
+
+    bCancel = CheckForSaveOrCancel()
 
     $objStatusBarViewModel.StartProgressBarWithPicture(("New..."), Null, Action["FileNew"].Picture, True, 33)
     Action["FileNew"].Enabled = False
@@ -381,23 +395,7 @@ Public Sub FileOpen()
     Dim sStatusMessage As String
     ' Dim sErrormessage As String
 
-    If Not IsNull($objModel) Then
-        If $objModel.Dirty Then
-            'prompt before saving
-            Select Case Message.Question(Subst(("Save changes?: &1"), $objModel.Key), ("&Yes"), ("&No"), ("&Cancel"))
-                Case 1
-                    'Yes, SAVE
-                    FileSave(True)
-                Case 2
-                    'No, skip Save and continue to do Open
-                Case 3
-                    'Cancel, skip Save and Open
-                    bCancel = True
-                Case Else
-                    Error.Raise("InvalidEnumArgumentException")
-            End Select
-        Endif
-    Endif
+    bCancel = CheckForSaveOrCancel()
 
     $objStatusBarViewModel.StartProgressBarWithPicture(("Opening..."), Null, Action["FileOpen"].Picture, True, 33)
     Action["FileOpen"].Enabled = False
@@ -461,7 +459,7 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
     Endif
 
     If IsNull($objModel.Key) Or If ($objModel.Key = ModelBase.KEY_NEW) Or If bSaveAs Then
-        response = InputBox(("Enter Name for model:"), ("Save As..."), Null)
+        response = InputBox(("Enter Name for model:"), ("Save As..."), $objModel.Key)
         If Not IsNull(response) Then
             $objModel.Key = response
         Else
@@ -522,23 +520,27 @@ End 'Sub
 
 Public Sub FileExit()
 
-    If Not IsNull($objModel) Then
-        If $objModel.Dirty Then
-            'prompt before saving
-            Select Case Message.Question(("Save changes?"), ("&Yes"), ("&No"))
-                Case 1
-                    'Yes, SAVE
-                    FileSave
-                Case 2
-                    'No
-                Case Else
-                    Error.Raise("InvalidEnumArgumentException")
-            End Select
-        Endif
+    Dim sStatusMessage As String
+    Dim bCancel As Boolean = False
+
+    $objStatusBarViewModel.StartProgressBarWithPicture(("Exiting..."), Null, Null, True, 33)
+    Action["FileExit"].Enabled = False
+
+    bCancel = CheckForSaveOrCancel()
+
+    If bCancel Then
+        sStatusMessage = ("Exit cancelled during model name input.")
+    Else
+        'EXIT
+        Me.Close
     Endif
 
-    Me.Close
-
+Finally
+    'will not be seen unless Exit cancelled during a SaveAs
+    If (bCancel) Then
+        Action["FileExit"].Enabled = True
+        $objStatusBarViewModel.StopProgressBar(sStatusMessage)
+    Endif
 Catch
     Debug Log.FormatError(Error.Text, Error.Where, Error.BackTrace)
 
