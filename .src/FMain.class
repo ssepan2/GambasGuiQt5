@@ -330,7 +330,7 @@ End
 
 Private Function CheckForSaveOrCancel() As Boolean
 
-    Dim bCancel As Boolean
+    Dim bCancel As Boolean = False
 
     If Not IsNull($objModel) Then
         If $objModel.Dirty Then
@@ -460,7 +460,7 @@ Public Sub FileSave(Optional bSaveAs As Boolean = False)
 
     If IsNull($objModel.Key) Or If ($objModel.Key = ModelBase.KEY_NEW) Or If bSaveAs Then
         response = InputBox(("Enter Name for model:"), ("Save As..."), $objModel.Key)
-        If Not IsNull(response) Then
+        If (Not IsNull(response) And response <> ModelBase.KEY_NEW) Then
             $objModel.Key = response
         Else
             bCancel = True
@@ -499,11 +499,16 @@ End
 Public Sub FilePrint()
 
     Dim sStatusMessage As String
+    Dim Printer1 As Printer
 
     $objStatusBarViewModel.StartProgressBarWithPicture(("Printing..."), Null, Action["FilePrint"].Picture, True, 33)
     Action["FilePrint"].Enabled = False
 
     If Something() Then 'TODO:print
+        Printer1 = New Printer As "Printer1"
+        Printer1.Configure()
+        ' Printer1.Preview()
+
         sStatusMessage = ("Printed.")
     Else
         sStatusMessage = ("Print cancelled.")
